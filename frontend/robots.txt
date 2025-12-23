@@ -1,0 +1,10 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: "https://quizzet.site/"
+
+# Sitemaps
+Sitemap: "https://quizzet.site/"/sitemap.xml
+Sitemap: https://quizzet.site/sitemap.xml
