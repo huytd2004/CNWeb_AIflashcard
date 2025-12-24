@@ -71,8 +71,8 @@ export default function FlashcardPage() {
         const fetchPublicFC = async () => {
             const param = new URLSearchParams(location.search)
             const language = param.get('language') || 'all'
-            // const search = param.get('search') || ''
-            const res = await flashcardService.getListFlashcardPublic({ currentPage, itemsPerPage: pagination.itemsPerPage, language: language })
+            const search = param.get('search') || ''
+            const res = await flashcardService.getListFlashcardPublic({ currentPage, itemsPerPage: pagination.itemsPerPage, language: language, search: search })
             setDataPublicFC(res.publicFlashcards || [])
             setPagination(res.pagination)
         }
@@ -176,20 +176,27 @@ export default function FlashcardPage() {
         updateURL(tabFlashcard, 1, langCode, searchFC)
     }
 
-    // // ✅ Handle search với URL update
+    // ✅ Handle search với URL update
     const handleSearchFC = (value: string) => {
         setSearchFC(value)
         setCurrentPage(1) // Reset về trang 1
 
-        // if (tabFlashcard === 'community') {
-        //     const search = dataPublicFC?.filter((item) => item.title.toLowerCase().includes(value.toLowerCase())) || []
-        //     setFilterDataUserFC(search)
-        // } else {
-        //     const search = dataUserFC.filter((item) => item.title.toLowerCase().includes(value.toLowerCase()))
-        //     setFilterDataPublicFC(search)
-        // }
+        // Filter cho tab "my-sets" (flashcard của user)
+        if (tabFlashcard === 'my-sets') {
+            if (value.trim() === '') {
+                setFilterDataUserFC(dataUserFC)
+            } else {
+                const filtered = dataUserFC.filter((item) => 
+                    item.title.toLowerCase().includes(value.toLowerCase())
+                )
+                setFilterDataUserFC(filtered)
+            }
+        }
 
-        // updateURL(tabFlashcard, 1, language, value)
+        // Cập nhật URL cho tab community
+        if (tabFlashcard === 'community') {
+            updateURL(tabFlashcard, 1, language, value)
+        }
     }
 
     useEffect(() => {

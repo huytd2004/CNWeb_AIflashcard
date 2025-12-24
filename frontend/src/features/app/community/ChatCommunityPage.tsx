@@ -28,6 +28,7 @@ export default function ChatCommunityPage() {
     const { socket, onlineUsers } = useSocket()
     const [loading, setLoading] = useState(false)
     const inputRef = useRef<HTMLInputElement | null>(null) // tham chiếu đến input
+    const [messageInput, setMessageInput] = useState('') // State để quản lý giá trị input
     const [image, setImage] = useState('')
     const [imageReview, setImageReview] = useState<string | null>(null)
     const [replyingTo, setReplyingTo] = useState<IChatCommunityMessage | null>(null) // quản lí trạng thái đang trả lời tin nhắn nào
@@ -108,7 +109,7 @@ export default function ChatCommunityPage() {
     }, [socket, messageHandlers])
 
     const handleSendMessage = useCallback(async () => {
-        if (!inputRef.current?.value.trim()) {
+        if (!messageInput.trim()) {
             toast.error('Vui lòng nhập nội dung tin nhắn', {
                 position: 'top-center',
                 duration: 3000,
@@ -133,15 +134,13 @@ export default function ChatCommunityPage() {
 
             const messageData = {
                 userId: user?._id,
-                message: inputRef.current?.value || '',
+                message: messageInput,
                 token: TokenStorage.getCookieToken(),
                 image: imageUrl,
                 replyTo: replyingTo,
             }
             socket?.emit('sendMessageCommu', messageData)
-            if (inputRef.current) {
-                inputRef.current.value = ''
-            }
+            setMessageInput('')
             setImage('')
             setImageReview(null)
             setReplyingTo(null)
@@ -160,7 +159,7 @@ export default function ChatCommunityPage() {
         } finally {
             setLoading(false)
         }
-    }, [image, user, replyingTo, socket])
+    }, [messageInput, image, user, replyingTo, socket])
 
     const handleUnsend = async (messageId: string) => {
         try {
@@ -224,18 +223,16 @@ export default function ChatCommunityPage() {
     }
 
     const handleMessageChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        if (inputRef.current) {
-            inputRef.current.value = e.target.value
-        }
+        setMessageInput(e.target.value)
     }, [])
 
     const handleKeyPress = useCallback(
         (e: React.KeyboardEvent<HTMLInputElement>) => {
-            if (e.key === 'Enter' && inputRef.current) {
+            if (e.key === 'Enter' && messageInput.trim()) {
                 handleSendMessage()
             }
         },
-        [handleSendMessage]
+        [handleSendMessage, messageInput]
     )
 
     const handleImageChange = (e: any) => {
@@ -389,6 +386,7 @@ export default function ChatCommunityPage() {
                                                 <input id="image" type="file" className="hidden" onChange={(e) => handleImageChange(e)} />
                                             </div>
                                             <Input
+                                                value={messageInput}
                                                 onChange={handleMessageChange}
                                                 ref={inputRef}
                                                 onPaste={handlePaste}
