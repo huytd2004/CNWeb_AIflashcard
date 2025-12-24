@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Bell, BookOpen, Brain, Cpu, History, Home, LogOut, Mailbox, Menu, Moon, Speech, Sun, User } from 'lucide-react'
+import { Bell, BookOpen, Brain, Cpu, History, Home, LogOut, Mailbox, Menu, Moon, Speech, Sun, User, Wand2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -32,8 +32,9 @@ export default function CHeader() {
         { name: 'AI Center', icon: <Brain size={16} />, href: '/ai-center' },
         // { name: 'Exam Eng', icon: <FolderOpenDot size={16} />, href: '/english-exam' },
         { name: 'Quiz', icon: <Cpu size={16} />, href: '/quiz' },
-        { name: 'Subj...', icon: <Cpu size={16} />, href: '/decuong' },
-        { name: 'Commu...', icon: <Speech size={16} />, href: '/community' },
+        { name: 'Subject', icon: <Cpu size={16} />, href: '/decuong' },
+        { name: 'Community', icon: <Speech size={16} />, href: '/community' },
+        { name: 'Tools', icon: <Wand2 size={16} />, href: '/tools' },
     ]
 
     useEffect(() => {
@@ -207,7 +208,6 @@ export default function CHeader() {
                             </div>
                         )}
                     </div>
-                    
                 </div>
             </div>
             <div className="fixed bottom-0  z-10 px-3 md:px-0 h-12 w-full bg-gray-100/90 dark:bg-gray-700/90 backdrop-blur-xs negative-shadow-md grid md:hidden grid-cols-6 items-center justify-center transition-all duration-300">

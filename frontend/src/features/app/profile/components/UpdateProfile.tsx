@@ -12,17 +12,26 @@ import axios from 'axios'
 import type { IUser } from '@/types/user'
 import profileService from '@/services/profileService'
 import { Link } from 'react-router-dom'
+import { useAuth } from '@/contexts/AuthContext'
 interface Props {
     isSettingsOpen: boolean
     setIsSettingsOpen: (open: boolean) => void
     user?: IUser | null // Optional user prop to reset tempProfile
-    onProfileUpdated?: () => void // Callback to refresh profile data
+    onProfileUpdated?: (updatedProfile: IUser) => void // Callback to refresh profile data
 }
 export default function UpdateProfile({ isSettingsOpen, setIsSettingsOpen, user, onProfileUpdated }: Props) {
+    const { setUser: setAuthUser } = useAuth() || {}
     const [tempProfile, setTempProfile] = useState<IUser | null>(user || null)
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [loading, setLoading] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
+
+    // Sync tempProfile with user prop when dialog opens or user changes
+    React.useEffect(() => {
+        if (user) {
+            setTempProfile(user)
+        }
+    }, [user, isSettingsOpen])
 
     const handleFileSelect = (file: File) => {
         // Validate file type
@@ -55,9 +64,12 @@ export default function UpdateProfile({ isSettingsOpen, setIsSettingsOpen, user,
     }
     const token = Cookies.get('token') || ''
     const handleSaveSettings = async () => {
-        if (user?.displayName === tempProfile?.displayName && user?.profilePicture === tempProfile?.profilePicture) {
+        // Check if no changes were made
+        if (!selectedFile && user?.displayName === tempProfile?.displayName) {
             setIsSettingsOpen(false)
+            return
         }
+        
         try {
             setLoading(true)
             let imageUrl = user?.profilePicture
@@ -75,20 +87,29 @@ export default function UpdateProfile({ isSettingsOpen, setIsSettingsOpen, user,
             }
             const data = await profileService.updateProfilePicture({ ...tempProfile, profilePicture: imageUrl })
             if (data?.ok) {
+                const updatedProfile = data.update_profile
+                
+                // Update tempProfile with new data
+                setTempProfile(updatedProfile)
+                
+                // Update AuthContext and localStorage
+                if (setAuthUser) {
+                    setAuthUser(updatedProfile)
+                    localStorage.setItem('user', JSON.stringify(updatedProfile))
+                }
+                
+                setSelectedFile(null)
+                setIsSettingsOpen(false)
+                
                 toast.success('Cập nhật thành công', {
                     position: 'top-center',
                     duration: 5000,
                     id: 'update-profile',
                 })
                 
-                // Update tempProfile with new data
-                setTempProfile(data.update_profile)
-                setSelectedFile(null)
-                setIsSettingsOpen(false)
-                
-                // Call callback to refresh parent component
+                // Call callback to refresh parent component with updated data
                 if (onProfileUpdated) {
-                    onProfileUpdated()
+                    onProfileUpdated(updatedProfile)
                 }
             } else {
                 toast.error('Đã có lỗi xảy ra', {

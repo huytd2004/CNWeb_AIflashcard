@@ -42,6 +42,13 @@ export default function UserProfile({ profile, quiz, flashcard, gamificationProf
         const tempUser = user?._id === profile?._id ? user : profile
         setUserProfile(tempUser)
     }, [user, profile, setUserProfile])
+
+    const handleProfileUpdate = (updatedProfile: IUser) => {
+        setUserProfile(updatedProfile)
+        if (onProfileUpdated) {
+            onProfileUpdated()
+        }
+    }
     if (!profile) {
         return (
             <div className="flex items-center justify-center min-h-screen flex-col gap-3">
@@ -112,7 +119,7 @@ export default function UserProfile({ profile, quiz, flashcard, gamificationProf
                             </div>
                         </div>
                         <div className="flex flex-col gap-5">
-                            {user?._id == userProfile?._id && <UpdateProfile isSettingsOpen={isSettingsOpen} setIsSettingsOpen={setIsSettingsOpen} user={userProfile} onProfileUpdated={onProfileUpdated} />}
+                            {user?._id == userProfile?._id && <UpdateProfile isSettingsOpen={isSettingsOpen} setIsSettingsOpen={setIsSettingsOpen} user={userProfile} onProfileUpdated={handleProfileUpdate} />}
                         </div>
                     </div>
                 </CardContent>

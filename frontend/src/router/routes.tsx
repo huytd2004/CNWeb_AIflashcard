@@ -30,6 +30,7 @@ import RootLayout from '@/layouts/RootLayout'
 import type { RouteObject } from 'react-router-dom'
 import SubjectOutlinePage from '@/features/app/subject-outline/pages/SubjectOutlinePage'
 import SOFlashcardPage from '@/features/app/subject-outline/pages/SOFlashcardPage'
+import ToolsPage from '@/features/app/tools/pages/ToolsPage'
 
 export const routes: RouteObject[] = [
     {
@@ -67,6 +68,10 @@ export const routes: RouteObject[] = [
                     {
                         path: 'community',
                         element: <ChatCommunityPage />,
+                    },
+                    {
+                        path: 'tools',
+                        element: <ToolsPage />,
                     },
                     {
                         path: '/community/top',
