@@ -30,8 +30,9 @@ interface PropsProfile {
     activities: IActivity[]
     countFlashcard: number
     isAnotherUser: boolean
+    onProfileUpdated?: () => void
 }
-export default function UserProfile({ profile, quiz, flashcard, gamificationProfile, achievements, levels, activities, countFlashcard, isAnotherUser = false }: PropsProfile) {
+export default function UserProfile({ profile, quiz, flashcard, gamificationProfile, achievements, levels, activities, countFlashcard, isAnotherUser = false, onProfileUpdated }: PropsProfile) {
     const { user } = useAuth() || {
         user: null,
     }
@@ -111,7 +112,7 @@ export default function UserProfile({ profile, quiz, flashcard, gamificationProf
                             </div>
                         </div>
                         <div className="flex flex-col gap-5">
-                            {user?._id == userProfile?._id && <UpdateProfile isSettingsOpen={isSettingsOpen} setIsSettingsOpen={setIsSettingsOpen} user={userProfile} />}
+                            {user?._id == userProfile?._id && <UpdateProfile isSettingsOpen={isSettingsOpen} setIsSettingsOpen={setIsSettingsOpen} user={userProfile} onProfileUpdated={onProfileUpdated} />}
                         </div>
                     </div>
                 </CardContent>

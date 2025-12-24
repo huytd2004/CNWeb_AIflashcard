@@ -64,7 +64,7 @@ export default function SubjectOutline({ isShowDetail = false }: { isShowDetail?
                 <div className="flex-1 flex items-center justify-between">
                     <div className="flex-1">
                         <h1 className="text-3xl font-bold">Đề cương</h1>
-                        <p>Tổng hợp những đề cương được upload từ cộng đồng Quizzet</p>
+                        <p>Tổng hợp những đề cương được upload từ cộng đồng My FlashCard</p>
                     </div>
                     {isShowDetail && (
                         <Button className="" variant="outline" onClick={() => navigate('/decuong')}>

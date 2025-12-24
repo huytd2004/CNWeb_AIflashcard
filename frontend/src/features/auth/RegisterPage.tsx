@@ -13,6 +13,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import authService, { type RegisterForm, type RegisterRequest } from '@/services/authService'
 import { useAuth } from '@/contexts/AuthContext'
 import ToastLogErrror from '@/components/etc/ToastLogErrror'
+import ChristmasLayout from '@/components/layout/ChristmasLayout'
+import ReindeerCursor from '@/components/effects/ReindeerCursor'
 
 export default function RegisterPage() {
     const navigate = useNavigate()
@@ -75,22 +77,25 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 my-10">
-            <div className="dark:bg-slate-800/80 bg-white border dark:border-white/10 rounded-2xl shadow-xl p-6 md:p-8 space-y-6">
+        <>
+        <ReindeerCursor />
+        <ChristmasLayout title="Merry Christmas">
+            <div className="dark:bg-slate-800/95 bg-white/95 backdrop-blur-md border dark:border-white/10 border-red-200 rounded-2xl shadow-2xl p-6 md:p-8 space-y-6 w-full max-w-md max-h-[90vh] overflow-y-auto" style={{ boxShadow: '0 0 30px rgba(255, 0, 0, 0.3), 0 0 60px rgba(255, 215, 0, 0.2)' }}>
                 {/* Header */}
                 <div className="flex items-center space-x-4">
                     <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={handleBackRouter}>
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <Link to="/" className="qwigley-font text-5xl  text-primary font-medium ">
-                        Quizzet
+                        My FlashCard
                     </Link>
+                    <span className="ml-2 text-2xl">🎅</span>
                 </div>
 
                 {/* Title */}
                 <div className="text-center space-y-2">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white/80">Tạo tài khoản</h1>
-                    <p className="text-gray-600 dark:text-gray-400">Tham gia Quizzet để khám phá thế giới kiến thức</p>
+                    <p className="text-gray-600 dark:text-gray-400">Tham gia My FlashCard để khám phá thế giới kiến thức</p>
                 </div>
 
                 {/* Google Login - Highlighted */}
@@ -208,9 +213,10 @@ export default function RegisterPage() {
 
                 {/* Additional CTA */}
                 <div className="mt-6 text-center">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Đăng ký bằng Google để truy cập nhanh chóng và an toàn</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Đăng ký bằng Google để truy cập nhanh chóng và an toàn 🎁</p>
                 </div>
             </div>
-        </div>
+        </ChristmasLayout>
+        </>
     )
 }

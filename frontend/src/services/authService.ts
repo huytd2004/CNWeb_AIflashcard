@@ -60,7 +60,7 @@ class AuthService {
 
     // Forgot password
     async forgotPassword(data: ForgotPasswordRequest): Promise<{ message: string }> {
-        const response = await axiosInstance.post<{ message: string }>('/auth/forget-password', data)
+        const response = await axiosInstance.post<{ message: string }>('/auth/forgot-password', data)
         return response.data
     }
 

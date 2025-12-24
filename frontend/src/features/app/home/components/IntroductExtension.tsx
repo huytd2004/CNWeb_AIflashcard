@@ -46,7 +46,7 @@ export default function IntroductExtension() {
                             <BookOpen className="w-8 h-8 text-purple-600" />
                         </div>
                         <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-3">Flashcard Tự Động</h3>
-                        <p className="text-gray-600 dark:text-gray-400">Từ vựng đã lưu tự động chuyển thành flashcard, đồng bộ với tài khoản Quizzet của bạn.</p>
+                        <p className="text-gray-600 dark:text-gray-400">Từ vựng đã lưu tự động chuyển thành flashcard, đồng bộ với tài khoản My FlashCard của bạn.</p>
                     </CardContent>
                 </Card>
             </div>
@@ -55,7 +55,7 @@ export default function IntroductExtension() {
                     <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-700 dark:text-gray-300">Sẵn sàng nâng cao trải nghiệm học từ vựng?</h3>
                     <p className="text-emerald-700 dark:text-emerald-100 mb-6 max-w-2xl mx-auto text-md">Tải extension ngay hôm nay và biến mọi trang web thành lớp học từ vựng của riêng bạn!</p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link to="https://github.com/trongandev/translate-quizzet-extension">
+                        <Link to="/">
                             <Button size="lg" className="bg-white dark:bg-emerald-800/50 dark:text-emerald-200 text-emerald-600 hover:scale-105 transition-transform duration-300 hover:bg-white/90">
                                 <Github className="w-5 h-5 mr-2" />
                                 Tải về từ Github
