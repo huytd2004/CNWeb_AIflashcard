@@ -1,13 +1,14 @@
 import axiosInstance from './axiosInstance'
 
 class QuizService {
-    async getPublicQuizzes({ currentPage, itemsPerPage }: { currentPage?: number; itemsPerPage?: number }) {
-        //&search=${search}
-        const response = await axiosInstance.get<any>(`/quiz?page=${currentPage}&limit=${itemsPerPage}`)
+    async getPublicQuizzes({ currentPage, itemsPerPage, search }: { currentPage?: number; itemsPerPage?: number; search?: string }) {
+        const searchParam = search ? `&search=${encodeURIComponent(search)}` : ''
+        const response = await axiosInstance.get<any>(`/quiz?page=${currentPage}&limit=${itemsPerPage}${searchParam}`)
         return response.data
     }
-    async getQuizByUser() {
-        const response = await axiosInstance.get<any>('/quiz/getquizbyuser')
+    async getQuizByUser(search?: string) {
+        const searchParam = search ? `?search=${encodeURIComponent(search)}` : ''
+        const response = await axiosInstance.get<any>(`/quiz/getquizbyuser${searchParam}`)
         return response.data
     }
 

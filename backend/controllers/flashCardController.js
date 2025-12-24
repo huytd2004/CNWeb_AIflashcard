@@ -90,7 +90,7 @@ exports.createFlashCardAI = async (req, res) => {
     await deleteCache(`summary_${id}`);
     await newFlashCard.save();
     await listFlashCard.save();
-    await GamificationService.addXpForTask(id, "ADD_WORD");
+    await GamificationService.addXpForTask(id, "ADD_WORD"); //lệnh gây ra lỗi "error": "Loại nhiệm vụ không hợp lệ: ADD_WORD"
     return res.status(200).json({
       ok: true,
       message: "Flashcard đã được tạo thành công",
@@ -156,6 +156,12 @@ exports.createFlashCard = async (req, res) => {
 
     // Thêm flashcard mới vào danh sách flashcard
     listFlashCard.flashcards.push(newFlashCard._id);
+
+    // Khởi tạo progress nếu không tồn tại
+    if (!listFlashCard.progress) {
+      listFlashCard.progress = { totalCards: 0, learnedCards: 0 };
+    }
+
     listFlashCard.progress.totalCards =
       (listFlashCard.progress.totalCards || 0) + 1;
     await deleteCache(`summary_${id}`);

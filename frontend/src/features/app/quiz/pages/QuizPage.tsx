@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import { SiQuizlet } from 'react-icons/si'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
@@ -56,7 +56,11 @@ export default function QuizPage() {
 
     useEffect(() => {
         const fetchPublicFC = async () => {
-            const resQuiz = await quizService.getPublicQuizzes({ currentPage, itemsPerPage: itemsPerPage })
+            const resQuiz = await quizService.getPublicQuizzes({ 
+                currentPage, 
+                itemsPerPage: itemsPerPage,
+                search: searchQuiz 
+            })
             setDataQuizPublic(resQuiz.publicQuiz)
             setPagination(resQuiz.pagination)
         }
@@ -69,11 +73,42 @@ export default function QuizPage() {
             setLoading(false)
         }
     }, [currentPage, itemsPerPage])
-    const handleSearchQuiz = (value: any) => {
+    const handleSearchQuiz = (value: string) => {
         setSearchQuiz(value)
-        // const search = quizData.filter((item) => item.title.toLowerCase().includes(value.toLowerCase()));
-        // setData(search);
-        // setCurrentPage(1); // Reset to first page after search
+    }
+
+    // Hàm thực hiện tìm kiếm
+    const executeSearch = async () => {
+        try {
+            setLoading(true)
+            setCurrentPage(1) // Reset to first page after search
+            
+            if (tab === 'my' && user) {
+                const resQuizData = await quizService.getQuizByUser(searchQuiz)
+                if (resQuizData.ok) {
+                    setDataQuiz(resQuizData.quiz)
+                }
+            } else if (tab === 'community') {
+                const resQuiz = await quizService.getPublicQuizzes({ 
+                    currentPage: 1, 
+                    itemsPerPage: itemsPerPage,
+                    search: searchQuiz 
+                })
+                setDataQuizPublic(resQuiz.publicQuiz)
+                setPagination(resQuiz.pagination)
+            }
+        } catch (error) {
+            ToastLogErrror(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    // Bắt sự kiện nhấn Enter
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            executeSearch()
+        }
     }
 
     const handleClose = () => {
@@ -161,10 +196,11 @@ export default function QuizPage() {
                             <div className="relative w-full ">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                                 <Input
-                                    placeholder="Tìm kiếm bài quiz..."
+                                    placeholder="Tìm kiếm bài quiz... (Nhấn Enter)"
                                     className="pl-10 w-full h-11 border border-gray-300 dark:border-white/10 "
                                     value={searchQuiz}
                                     onChange={(e) => handleSearchQuiz(e.target.value)}
+                                    onKeyDown={handleKeyDown}
                                 />
                             </div>
                             <Button

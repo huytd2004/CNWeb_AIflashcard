@@ -225,13 +225,34 @@ export default function AddVocaModal({ children, listFlashcard, setListFlashcard
                                                             title: e.target.value,
                                                         }))
                                                     }
-                                                    autoFocus
                                                     autoComplete="off"
-                                                    onKeyDown={handleEnterKey}
-                                                    placeholder="Nhập từ hoặc câu bằng tiếng việt..."
+                                                    placeholder="Ví dụ: Hello, Good morning..."
                                                     className="flex-1"
                                                 />
                                             </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="define" className="text-sm font-medium">
+                                                    Định nghĩa
+                                                    <Badge variant="destructive" className="text-xs ml-2">
+                                                        Bắt buộc
+                                                    </Badge>
+                                                </Label>
+                                                <Textarea
+                                                    id="define"
+                                                    value={formData.define}
+                                                    onChange={(e) =>
+                                                        setFormData((prev) => ({
+                                                            ...prev,
+                                                            define: e.target.value,
+                                                        }))
+                                                    }
+                                                    placeholder="Nhập nghĩa của từ... Ví dụ: Xin chào, chào hỏi"
+                                                    rows={3}
+                                                    className="resize-none"
+                                                />
+                                            </div>
+
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="space-y-2">
                                                     <Label htmlFor="transcription" className="text-sm font-medium flex items-center gap-1">
