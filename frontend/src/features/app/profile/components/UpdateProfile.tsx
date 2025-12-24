@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -23,6 +23,13 @@ export default function UpdateProfile({ isSettingsOpen, setIsSettingsOpen, user,
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [loading, setLoading] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
+
+    // Sync tempProfile with user prop when it changes
+    useEffect(() => {
+        if (user) {
+            setTempProfile(user)
+        }
+    }, [user])
 
     const handleFileSelect = (file: File) => {
         // Validate file type
@@ -49,14 +56,14 @@ export default function UpdateProfile({ isSettingsOpen, setIsSettingsOpen, user,
         const file = event.target.files?.[0]
         if (file) {
             handleFileSelect(file)
-            const reader = new FileReader()
-            reader.readAsDataURL(file)
         }
     }
     const token = Cookies.get('token') || ''
     const handleSaveSettings = async () => {
-        if (user?.displayName === tempProfile?.displayName && user?.profilePicture === tempProfile?.profilePicture) {
+        // Check if there are no changes
+        if (user?.displayName === tempProfile?.displayName && user?.profilePicture === tempProfile?.profilePicture && !selectedFile) {
             setIsSettingsOpen(false)
+            return
         }
         try {
             setLoading(true)
@@ -80,6 +87,14 @@ export default function UpdateProfile({ isSettingsOpen, setIsSettingsOpen, user,
                     duration: 5000,
                     id: 'update-profile',
                 })
+                
+                // Update localStorage with new user data
+                const currentUser = localStorage.getItem('user')
+                if (currentUser) {
+                    const parsedUser = JSON.parse(currentUser)
+                    const updatedUser = { ...parsedUser, ...data.update_profile }
+                    localStorage.setItem('user', JSON.stringify(updatedUser))
+                }
                 
                 // Update tempProfile with new data
                 setTempProfile(data.update_profile)
@@ -140,9 +155,11 @@ export default function UpdateProfile({ isSettingsOpen, setIsSettingsOpen, user,
                                 />
                                 <AvatarFallback>
                                     {tempProfile?.displayName
-                                        .split(' ')
-                                        .map((n) => n[0])
-                                        .join('')}
+                                        ? tempProfile.displayName
+                                              .split(' ')
+                                              .map((n) => n[0])
+                                              .join('')
+                                        : 'NK'}
                                 </AvatarFallback>
                                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center" onClick={handleButtonClick}>
                                     <Camera />

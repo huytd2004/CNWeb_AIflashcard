@@ -33,15 +33,27 @@ interface PropsProfile {
     onProfileUpdated?: () => void
 }
 export default function UserProfile({ profile, quiz, flashcard, gamificationProfile, achievements, levels, activities, countFlashcard, isAnotherUser = false, onProfileUpdated }: PropsProfile) {
-    const { user } = useAuth() || {
+    const { user, setUser } = useAuth() || {
         user: null,
+        setUser: () => {},
     }
     const [userProfile, setUserProfile] = useState<IUser | null>(null)
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
     useEffect(() => {
-        const tempUser = user?._id === profile?._id ? user : profile
+        const tempUser = user?._id === profile?._id ? profile : profile
         setUserProfile(tempUser)
-    }, [user, profile, setUserProfile])
+        // Update AuthContext if it's current user's profile
+        if (user?._id === profile?._id && setUser) {
+            setUser(profile)
+        }
+    }, [user?._id, profile, setUser])
+
+    const handleProfileUpdate = async () => {
+        // Call parent's refetch to get latest data from API
+        if (onProfileUpdated) {
+            await onProfileUpdated()
+        }
+    }
     if (!profile) {
         return (
             <div className="flex items-center justify-center min-h-screen flex-col gap-3">
@@ -112,7 +124,7 @@ export default function UserProfile({ profile, quiz, flashcard, gamificationProf
                             </div>
                         </div>
                         <div className="flex flex-col gap-5">
-                            {user?._id == userProfile?._id && <UpdateProfile isSettingsOpen={isSettingsOpen} setIsSettingsOpen={setIsSettingsOpen} user={userProfile} onProfileUpdated={onProfileUpdated} />}
+                            {user?._id == userProfile?._id && <UpdateProfile isSettingsOpen={isSettingsOpen} setIsSettingsOpen={setIsSettingsOpen} user={userProfile} onProfileUpdated={handleProfileUpdate} />}
                         </div>
                     </div>
                 </CardContent>

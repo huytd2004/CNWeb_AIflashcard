@@ -1,0 +1,41 @@
+{
+    "manifest_version": 3,
+    "name": "My FlashCard Translation Extension",
+    "version": "1.0.4",
+    "description": "Một công cụ giúp dịch thuật cũng như lưu lại từ vựng nhanh chóng trên trang MyFlashCard.site",
+    "permissions": ["activeTab", "cookies", "storage", "scripting", "tabs", "notifications"],
+    "background": {
+        "service_worker": "src/background.js"
+    },
+    "action": {
+        "default_popup": "src/popup/popup.html",
+        "default_icon": "assets/icons.png"
+    },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["src/content.js"],
+            "run_at": "document_idle"
+        }
+    ],
+    "icons": {
+        "16": "assets/icons.png",
+        "32": "assets/icons.png",
+        "48": "assets/icons.png",
+        "128": "assets/icons.png"
+    },
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'"
+    },
+    "host_permissions": ["*://*/*"],
+    "web_accessible_resources": [
+        {
+            "resources": ["assets/*", "src/option/*"],
+            "matches": ["<all_urls>"]
+        }
+    ],
+    "options_ui": {
+        "page": "src/option/option.html",
+        "open_in_tab": true
+    }
+}
