@@ -117,7 +117,7 @@ export default function DialogAddMoreInfoQuiz({ children, isEdit, params, setSho
         if (loadingTitle) return // Prevent multiple clicks
         setLoadingTitle(true)
         try {
-            const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
             const shuffledQuestions = generatedQuiz?.questions ? [...generatedQuiz.questions].sort(() => Math.random() - 0.5) : []
             const sliceQuiz = shuffledQuestions.slice(0, 10)
             const prompt = optimizedPromptGenerateTitle(sliceQuiz)
