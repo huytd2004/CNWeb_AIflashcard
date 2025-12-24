@@ -4,7 +4,7 @@ import profileService from '@/services/profileService'
 import LoadingScreen from '@/components/etc/LoadingScreen'
 
 export default function ProfilePage() {
-    const { data, loading } = useFetching(() => profileService.getProfile(), {})
+    const { data, loading, refetch } = useFetching(() => profileService.getProfile(), {})
 
     if (loading) {
         return LoadingScreen()
@@ -19,7 +19,8 @@ export default function ProfilePage() {
             levels={data?.levels}
             activities={data?.activities}
             countFlashcard={data?.countFlashcard}
-            isAnotherUser={true}
+            isAnotherUser={false}
+            onProfileUpdated={refetch}
         />
     )
 }

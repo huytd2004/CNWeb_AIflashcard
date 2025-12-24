@@ -17,7 +17,7 @@ export default function OverViewProfile({
     countListFC: number
 }) {
     const currentLevel = levels[gamificationProfile.level]
-    if (!levels) {
+    if (!levels || !currentLevel) {
         return <div className="text-center text-red-500">Cấp độ không hợp lệ</div>
     }
     return (

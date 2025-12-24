@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
-
 import { useNavigate, Link } from 'react-router-dom'
-
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ArrowLeft, CheckCircle, Lock, Mail } from 'lucide-react'
@@ -11,6 +9,8 @@ import { Label } from '@/components/ui/label'
 import Loading from '@/components/ui/loading'
 import { toast } from 'sonner'
 import authService from '@/services/authService'
+import ChristmasLayout from '@/components/layout/ChristmasLayout'
+import ReindeerCursor from '@/components/effects/ReindeerCursor'
 
 export default function ForgotPasswordPage() {
     const navigate = useNavigate()
@@ -55,9 +55,8 @@ export default function ForgotPasswordPage() {
 
     if (isEmailSent) {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4">
-                <div className="">
-                    <form className="dark:bg-slate-800/80 bg-white border dark:border-white/10 rounded-2xl shadow-xl p-6 md:p-8 space-y-6" onSubmit={formik.handleSubmit}>
+            <ChristmasLayout title="Merry Christmas">
+                    <form className="dark:bg-slate-800/95 bg-white/95 backdrop-blur-md border dark:border-white/10 border-red-200 rounded-2xl shadow-2xl p-6 md:p-8 space-y-6 w-full max-w-md" style={{ boxShadow: '0 0 30px rgba(255, 0, 0, 0.3), 0 0 60px rgba(255, 215, 0, 0.2)' }} onSubmit={formik.handleSubmit}>
                         {/* Success Icon */}
                         <div className="flex justify-center">
                             <div className="w-16 h-16 bg-green-100 dark:bg-green-800/50 rounded-full flex items-center justify-center">
@@ -76,7 +75,7 @@ export default function ForgotPasswordPage() {
                             <h3 className="font-medium text-gray-900 dark:text-white/80">Bước tiếp theo:</h3>
                             <ul className="text-sm text-gray-600 space-y-1 dark:text-blue-400">
                                 <li>• Kiểm tra hộp thư đến của bạn</li>
-                                <li>• Tìm email từ Quizzet</li>
+                                <li>• Tìm email từ My FlashCard</li>
                                 <li>• Nhấp vào liên kết trong email</li>
                                 <li>• Tạo mật khẩu mới</li>
                             </ul>
@@ -88,28 +87,30 @@ export default function ForgotPasswordPage() {
                                 Gửi lại email
                             </Button>
 
-                            <Link to="/login" className="block">
+                            <Link to="/auth/login" className="block">
                                 <Button className="w-full bg-primary hover:bg-primary/80 text-white">Quay lại đăng nhập</Button>
                             </Link>
                         </div>
                     </form>
-                </div>
-            </div>
+            </ChristmasLayout>
         )
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4">
-            <div className="">
-                <form className="dark:bg-slate-800/80 bg-white border dark:border-white/10 rounded-2xl shadow-xl p-8 space-y-6" onSubmit={formik.handleSubmit}>
+        <>
+        <ReindeerCursor />
+        
+        <ChristmasLayout title="Merry Christmas">
+                <form className="dark:bg-slate-800/95 bg-white/95 backdrop-blur-md border dark:border-white/10 border-red-200 rounded-2xl shadow-2xl p-8 space-y-6 w-full max-w-md" style={{ boxShadow: '0 0 30px rgba(255, 0, 0, 0.3), 0 0 60px rgba(255, 215, 0, 0.2)' }} onSubmit={formik.handleSubmit}>
                     {/* Header */}
                     <div className="flex items-center space-x-4">
                         <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={handleBackRouter}>
                             <ArrowLeft className="h-4 w-4" />
                         </Button>
                         <Link to="/" className="qwigley-font text-5xl  text-primary font-medium ">
-                            Quizzet
+                            My FlashCard
                         </Link>
+                        <span className="ml-2 text-2xl">🎅</span>
                     </div>
                     {/* Icon */}
                     <div className="flex justify-center">
@@ -152,29 +153,20 @@ export default function ForgotPasswordPage() {
                     <div className="text-center text-sm space-y-2">
                         <div>
                             <span className="text-gray-600 dark:text-gray-400">Nhớ lại mật khẩu? </span>
-                            <Link to="/login" className="text-primary hover:underline font-medium">
+                            <Link to="/auth/login" className="text-primary hover:underline font-medium">
                                 Đăng nhập
                             </Link>
                         </div>
                         <div>
                             <span className="text-gray-600 dark:text-gray-400">Chưa có tài khoản? </span>
-                            <Link to="/register" className="text-primary hover:underline font-medium">
+                            <Link to="/auth/register" className="text-primary hover:underline font-medium">
                                 Đăng ký ngay
                             </Link>
                         </div>
                     </div>
                 </form>
-
-                {/* Additional Help */}
-                <div className="mt-6 text-center">
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Cần hỗ trợ? Liên hệ{' '}
-                        <Link to="https://www.facebook.com/trongandev" target="_blank" className="text-primary hover:underline">
-                            Đội ngũ hỗ trợ
-                        </Link>
-                    </p>
-                </div>
-            </div>
-        </div>
+        </ChristmasLayout>
+        </>
     )
+
 }

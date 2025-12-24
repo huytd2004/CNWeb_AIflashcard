@@ -70,11 +70,11 @@ export default function HomePage() {
                 )} */}
                 <div className="">
                     <h1 className="text-2xl xl:text-4xl font-bold text-center bg-linear-to-br from-primary/80 to-purple-700/80 dark:from-primary dark:to-purple-500/80 text-transparent bg-clip-text">
-                        Quizzet - Nền tảng học tập thông minh cho sinh viên
+                        My FlashCard - Nền tảng học tập thông minh cho sinh viên
                     </h1>
                     <p className="mt-3 text-md md:text-lg text-center max-w-6xl mx-auto text-gray-600 dark:text-slate-300">
-                        Quizzet là người bạn đồng hành đáng tin cậy trên hành trình học tập của bạn. Với sự hỗ trợ từ công nghệ AI tiên tiến, chúng tôi mang đến cho bạn một trải nghiệm học tập độc đáo
-                        và hiệu quả hơn bao giờ hết. Khám phá ngay các tính năng nổi bật của Quizzet để tối ưu hóa quá trình học hỏi và phát triển kiến thức của bạn.
+                        My FlashCard là người bạn đồng hành đáng tin cậy trên hành trình học tập của bạn. Với sự hỗ trợ từ công nghệ AI tiên tiến, chúng tôi mang đến cho bạn một trải nghiệm học tập độc đáo
+                        và hiệu quả hơn bao giờ hết. Khám phá ngay các tính năng nổi bật của My FlashCard để tối ưu hóa quá trình học hỏi và phát triển kiến thức của bạn.
                     </p>
                     <div
                         style={{
@@ -132,7 +132,7 @@ export default function HomePage() {
             {!user && (
                 <div className="mt-20 h-72 bg-linear-to-br from-primary/80 to-purple-700/80  flex items-center justify-center flex-col gap-3 text-center md:text-left">
                     <h1 className=" text-2xl md:text-4xl text-white font-bold">Sẵn sàng bắt đầu hành trình học tập?</h1>
-                    <p className="text-md md:text-lg text-white/80">Tham gia cộng đồng hơn 300 học viên đang học tập hiệu quả cùng Quizzet</p>
+                    <p className="text-md md:text-lg text-white/80">Tham gia cộng đồng hơn 300 học viên đang học tập hiệu quả cùng My FlashCard</p>
                     <div className="flex items-center gap-5">
                         <Link to="/login" className="block ">
                             <Button className=" h-12 text-xl bg-linear-to-r from-primary/80 to-purple-700/80 dark:text-gray-300">

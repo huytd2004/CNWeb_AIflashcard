@@ -12,6 +12,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import authService, { type LoginRequest } from '@/services/authService'
 import { useAuth } from '@/contexts/AuthContext'
 import ToastLogErrror from '@/components/etc/ToastLogErrror'
+import ChristmasLayout from '@/components/layout/ChristmasLayout'
+import ReindeerCursor from '@/components/effects/ReindeerCursor'
 
 export default function LoginPage() {
     const navigate = useNavigate()
@@ -80,8 +82,10 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4">
-            <div className="dark:bg-slate-800/80 bg-white border dark:border-white/10 rounded-2xl shadow-xl p-6 md:p-8 space-y-6">
+        <>
+        <ReindeerCursor />
+        <ChristmasLayout title="Merry Christmas">
+            <div className="dark:bg-slate-800/95 bg-white/95 backdrop-blur-md border dark:border-white/10 border-red-200 rounded-2xl shadow-2xl p-6 md:p-8 space-y-6 w-full max-w-md" style={{ boxShadow: '0 0 30px rgba(255, 0, 0, 0.3), 0 0 60px rgba(255, 215, 0, 0.2)' }}>
                 {/* Header */}
                 {/* <ChangePassword isOpen={isOpen} setIsOpen={setIsOpen} /> */}
                 <div className="flex items-center">
@@ -89,14 +93,15 @@ export default function LoginPage() {
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <Link to="/" className="qwigley-font text-5xl  text-primary font-medium ">
-                        Quizzet
+                        My FlashCard
                     </Link>
+                    <span className="ml-2 text-2xl">🎅</span>
                 </div>
 
                 {/* Title */}
                 <div className="text-center space-y-2">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white/80">Đăng nhập</h1>
-                    <p className="text-gray-600 dark:text-gray-400">Đăng nhập để trải nghiệm Quizzet tốt hơn nhé</p>
+                    <p className="text-gray-600 dark:text-gray-400">Đăng nhập để trải nghiệm My FlashCard tốt hơn nhé</p>
                 </div>
 
                 {/* Google Login - Highlighted */}
@@ -168,9 +173,11 @@ export default function LoginPage() {
 
                 {/* Additional CTA */}
                 <div className="mt-6 text-center">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Đăng nhập bằng Google để truy cập nhanh chóng và an toàn</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Đăng nhập bằng Google để truy cập nhanh chóng và an toàn 🎁</p>
                 </div>
             </div>
-        </div>
+        </ChristmasLayout>
+        </>
     )
+    
 }
