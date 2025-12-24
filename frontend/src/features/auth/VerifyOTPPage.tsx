@@ -4,8 +4,8 @@ import { useNavigate, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ArrowLeft, CheckCircle, Mail } from 'lucide-react'
-// import { toast } from 'sonner'
-// import type authService from '@/services/authService'
+import ChristmasLayout from '@/components/layout/ChristmasLayout'
+import ReindeerCursor from '@/components/effects/ReindeerCursor'
 
 export default function VerifyOTPPage() {
     const navigate = useNavigate()
@@ -72,38 +72,6 @@ export default function VerifyOTPPage() {
         inputRefs.current[0]?.focus()
     }
 
-    // const fetchForgotPassword = async (values: any) => {
-    //     setLoading(true)
-    //     try {
-    //         const res = await authService.forgotPassword({ email: values.email })
-    //         const res = await POST_API('/auth/forget', { email: values.email }, 'POST', token)
-    //         if (res) {
-    //             const data = await res.json()
-    //             if (res.ok) {
-    //                 toast.success('Yêu cầu đặt lại mật khẩu thành công', {
-    //                     description: 'Vui lòng kiểm tra email của bạn để đặt lại mật khẩu',
-    //                     position: 'top-center',
-    //                 })
-    //                 setIsSuccess(true)
-    //             } else if (res.status === 500) {
-    //                 toast.info('Tính năng lấy lại mật khẩu bị đóng', {
-    //                     description: 'Do chúng tôi chưa gia hạn refesh-token của google nên bị lỗi này, xin lỗi vì sự bất tiện này',
-    //                     position: 'top-center',
-    //                     duration: 7000,
-    //                 })
-    //             } else {
-    //                 toast.warning(data.message, {
-    //                     position: 'top-center',
-    //                 })
-    //             }
-    //         }
-    //     } catch (error) {
-    //         toast.warning((error as Error).message)
-    //     } finally {
-    //         setLoading(false)
-    //     }
-    // }
-
     const handleBackRouter = (e: any) => {
         e.preventDefault()
         navigate(-1)
@@ -111,43 +79,43 @@ export default function VerifyOTPPage() {
 
     if (isSuccess) {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4">
-                <div className="">
-                    <div className="bg-slate-800/80 rounded-2xl shadow-xl p-6 md:p-8 space-y-6">
-                        {/* Success Icon */}
-                        <div className="flex justify-center">
-                            <div className="w-16 h-16 bg-green-100 dark:bg-green-800/50 rounded-full flex items-center justify-center">
-                                <CheckCircle className="w-8 h-8 text-green-500 dark:text-green-200" />
-                            </div>
+            <ChristmasLayout title="Merry Christmas">
+                <div className="dark:bg-slate-800/95 bg-white/95 backdrop-blur-md border dark:border-white/10 border-red-200 rounded-2xl shadow-2xl p-6 md:p-8 space-y-6 w-full max-w-md" style={{ boxShadow: '0 0 30px rgba(255, 0, 0, 0.3), 0 0 60px rgba(255, 215, 0, 0.2)' }}>
+                    {/* Success Icon */}
+                    <div className="flex justify-center">
+                        <div className="w-16 h-16 bg-green-100 dark:bg-green-800/50 rounded-full flex items-center justify-center">
+                            <CheckCircle className="w-8 h-8 text-green-500 dark:text-green-200" />
                         </div>
-
-                        {/* Title */}
-                        <div className="space-y-2">
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white/80">Xác thực thành công!</h1>
-                            <p className="text-gray-600 dark:text-gray-400 w-full md:w-[400px] mx-auto">Bạn đã đăng nhập thành công vào Quizzet. Chào mừng bạn trở lại!</p>
-                        </div>
-
-                        <Link to="/" className="block">
-                            <Button className="w-full bg-primary hover:bg-primary/80 text-white">Về trang chủ</Button>
-                        </Link>
                     </div>
+
+                    {/* Title */}
+                    <div className="space-y-2">
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white/80">Xác thực thành công!</h1>
+                        <p className="text-gray-600 dark:text-gray-400 w-full md:w-[400px] mx-auto">Bạn đã đăng nhập thành công vào My FlashCard. Chào mừng bạn trở lại!</p>
+                    </div>
+
+                    <Link to="/" className="block">
+                        <Button className="w-full bg-primary hover:bg-primary/80 text-white">Về trang chủ</Button>
+                    </Link>
                 </div>
-            </div>
+            </ChristmasLayout>
         )
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4">
-            <div className="">
-                <div className="dark:bg-slate-800/80 bg-white border dark:border-white/10 rounded-2xl shadow-xl p-8 space-y-6">
+        <>
+            <ReindeerCursor />
+            <ChristmasLayout title="Merry Christmas">
+                <div className="dark:bg-slate-800/95 bg-white/95 backdrop-blur-md border dark:border-white/10 border-red-200 rounded-2xl shadow-2xl p-8 space-y-6 w-full max-w-md" style={{ boxShadow: '0 0 30px rgba(255, 0, 0, 0.3), 0 0 60px rgba(255, 215, 0, 0.2)' }}>
                     {/* Header */}
                     <div className="flex items-center space-x-4">
                         <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={handleBackRouter}>
                             <ArrowLeft className="h-4 w-4" />
                         </Button>
-                        <Link to="/">
-                            <img alt="" width={150} height={150} src="/logo.png"></img>
+                        <Link to="/" className="qwigley-font text-5xl text-primary font-medium">
+                            My FlashCard
                         </Link>
+                        <span className="ml-2 text-2xl">🎅</span>
                     </div>
                     {/* Icon */}
                     <div className="flex justify-center">
@@ -211,17 +179,7 @@ export default function VerifyOTPPage() {
                         </div>
                     </div>
                 </div>
-
-                {/* Additional Help */}
-                <div className="mt-6 text-center">
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Cần hỗ trợ? Liên hệ{' '}
-                        <Link to="https://www.facebook.com/trongandev" target="_blank" className="text-primary hover:underline">
-                            Đội ngũ hỗ trợ
-                        </Link>
-                    </p>
-                </div>
-            </div>
-        </div>
+            </ChristmasLayout>
+        </>
     )
 }

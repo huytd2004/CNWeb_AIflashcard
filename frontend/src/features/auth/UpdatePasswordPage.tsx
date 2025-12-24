@@ -139,7 +139,7 @@ export default function UpdatePasswordPage() {
                             <ArrowLeft className="h-4 w-4" />
                         </Button>
                         <Link to="/" className="qwigley-font text-5xl  text-primary font-medium ">
-                            Quizzet
+                            My FlashCard
                         </Link>
                     </div>
                     {/* Icon */}

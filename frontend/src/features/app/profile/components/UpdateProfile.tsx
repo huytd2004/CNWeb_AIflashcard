@@ -16,8 +16,9 @@ interface Props {
     isSettingsOpen: boolean
     setIsSettingsOpen: (open: boolean) => void
     user?: IUser | null // Optional user prop to reset tempProfile
+    onProfileUpdated?: () => void // Callback to refresh profile data
 }
-export default function UpdateProfile({ isSettingsOpen, setIsSettingsOpen, user }: Props) {
+export default function UpdateProfile({ isSettingsOpen, setIsSettingsOpen, user, onProfileUpdated }: Props) {
     const [tempProfile, setTempProfile] = useState<IUser | null>(user || null)
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [loading, setLoading] = useState(false)
@@ -72,15 +73,23 @@ export default function UpdateProfile({ isSettingsOpen, setIsSettingsOpen, user 
                 })
                 imageUrl = uploadResponse?.data?.url
             }
-            const res = await profileService.updateProfilePicture({ ...tempProfile, profilePicture: imageUrl })
-            const data = await res?.json()
-            if (res?.ok) {
+            const data = await profileService.updateProfilePicture({ ...tempProfile, profilePicture: imageUrl })
+            if (data?.ok) {
                 toast.success('Cập nhật thành công', {
                     position: 'top-center',
                     duration: 5000,
                     id: 'update-profile',
                 })
+                
+                // Update tempProfile with new data
+                setTempProfile(data.update_profile)
+                setSelectedFile(null)
                 setIsSettingsOpen(false)
+                
+                // Call callback to refresh parent component
+                if (onProfileUpdated) {
+                    onProfileUpdated()
+                }
             } else {
                 toast.error('Đã có lỗi xảy ra', {
                     description: data?.message,
@@ -172,7 +181,7 @@ export default function UpdateProfile({ isSettingsOpen, setIsSettingsOpen, user 
 
                     {/* Password Link */}
                     <div className="pt-2">
-                        <Link to="/update-password" className="">
+                        <Link to="/auth/update-password" className="">
                             <Button variant="secondary">
                                 Thay đổi mật khẩu <ArrowRight />
                             </Button>

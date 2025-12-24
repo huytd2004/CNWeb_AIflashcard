@@ -289,7 +289,7 @@ export default function ChatCommunityPage() {
                             <div className="flex items-center gap-3">
                                 <div className="flex items-center gap-3 ">
                                     <Hash className="text-4xl font-bold dark:text-gray-400" />
-                                    <h3>Quizzet Community</h3>
+                                    <h3>My FlashCard Community</h3>
                                 </div>
                                 <div className="w-0.5 h-6 bg-gray-300 dark:bg-gray-600 "></div>
                                 <p className="dark:text-white/60 line-clamp-1 hidden md:block">Kênh thảo luận chung cho cộng đồng</p>
@@ -393,7 +393,7 @@ export default function ChatCommunityPage() {
                                                 ref={inputRef}
                                                 onPaste={handlePaste}
                                                 onKeyPress={handleKeyPress}
-                                                placeholder="Nhắn tin tới # cộng đồng quizzet "
+                                                placeholder="Nhắn tin tới # cộng đồng My FlashCard..."
                                                 className="flex-1 text-sm md:text-md border-none shadow-none ring-0 outline-none focus-visible:ring-0"
                                             ></Input>
                                             <div className="flex items-center gap-3">

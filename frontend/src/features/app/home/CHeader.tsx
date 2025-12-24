@@ -82,7 +82,7 @@ export default function CHeader() {
             >
                 <nav className="flex flex-col gap-2 items-start justify-start">
                     <Link to="/" className="qwigley-font text-5xl  text-primary dark:text-white font-medium text-center block w-full py-4 translate-y-2">
-                        Quizzet
+                        My FlashCard
                     </Link>
                     {linkData.map((item) => (
                         <Link
@@ -104,7 +104,7 @@ export default function CHeader() {
                     <div className="flex items-center gap-2">
                         <Menu size={16} className="block md:hidden cursor-pointer hover:opacity-60 text-white  " onClick={() => setIsOpenNavBar(true)} />
                         <Link to="/" className="qwigley-font text-4xl translate-y-1 text-white  font-medium">
-                            Quizzet
+                            My FlashCard
                         </Link>
                     </div>
 

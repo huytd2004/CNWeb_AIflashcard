@@ -12,6 +12,7 @@ import Loading from '@/components/ui/loading'
 import { toast } from 'sonner'
 import authService from '@/services/authService'
 import ToastLogErrror from '@/components/etc/ToastLogErrror'
+import ChristmasLayout from '@/components/layout/ChristmasLayout'
 
 export default function ChangePasswordPage() {
     const navigate = useNavigate()
@@ -106,9 +107,8 @@ export default function ChangePasswordPage() {
 
     if (isChangePassword) {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 my-10">
-                <div className="">
-                    <div className="dark:bg-slate-800/80 bg-white border dark:border-white/10 rounded-2xl shadow-xl p-6 md:p-8 space-y-6">
+            <ChristmasLayout title="Merry Christmas">
+                    <div className="dark:bg-slate-800/95 bg-white/95 backdrop-blur-md border dark:border-white/10 border-red-200 rounded-2xl shadow-2xl p-6 md:p-8 space-y-6 w-full max-w-md" style={{ boxShadow: '0 0 30px rgba(255, 0, 0, 0.3), 0 0 60px rgba(255, 215, 0, 0.2)' }}>
                         {/* Icon */}
                         <div className="flex justify-center">
                             <div className="w-16 h-16 bg-blue-100 dark:bg-blue-800/50 rounded-full flex items-center justify-center">
@@ -137,23 +137,22 @@ export default function ChangePasswordPage() {
                             <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/80  dark:via-white/10 to-transparent transition-all duration-500 -translate-x-full group-hover:translate-x-full"></div>
                         </Button>
                     </div>
-                </div>
-            </div>
+            </ChristmasLayout>
         )
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 my-10">
-            <div className="">
-                <form className="dark:bg-slate-800/80 bg-white border dark:border-white/10 rounded-2xl shadow-xl p-8 space-y-6" onSubmit={formik.handleSubmit}>
+        <ChristmasLayout title="Merry Christmas">
+                <form className="dark:bg-slate-800/95 bg-white/95 backdrop-blur-md border dark:border-white/10 border-red-200 rounded-2xl shadow-2xl p-8 space-y-6 w-full max-w-md" style={{ boxShadow: '0 0 30px rgba(255, 0, 0, 0.3), 0 0 60px rgba(255, 215, 0, 0.2)' }} onSubmit={formik.handleSubmit}>
                     {/* Header */}
                     <div className="flex items-center space-x-4">
                         <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={handleBackRouter}>
                             <ArrowLeft className="h-4 w-4" />
                         </Button>
-                        <Link to="/">
-                            <img alt="" width={150} height={150} src="/logo.png"></img>
+                        <Link to="/" className="qwigley-font text-5xl text-primary font-medium">
+                            My FlashCard
                         </Link>
+                        <span className="ml-2 text-2xl">🎅</span>
                     </div>
                     {/* Icon */}
                     <div className="flex justify-center">
@@ -258,7 +257,6 @@ export default function ChangePasswordPage() {
                         </Button>
                     </div>
                 </form>
-            </div>
-        </div>
+        </ChristmasLayout>
     )
 }

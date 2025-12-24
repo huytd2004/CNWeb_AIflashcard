@@ -30,7 +30,7 @@ class ProfileService {
 
     async updateProfilePicture(data: any) {
         const response = await axiosInstance.patch<any>(`/profile/`, data)
-        return response.data.data
+        return response.data
     }
 }
 
