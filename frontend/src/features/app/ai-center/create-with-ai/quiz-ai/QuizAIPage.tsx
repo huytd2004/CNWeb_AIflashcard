@@ -112,7 +112,7 @@ export function QuizAIPage() {
             setIsGenerating(true)
             // setOpenGame(true)
             let prompt = ''
-            const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
             if (type === 'interface') {
                 prompt = optimizedPromptQuiz(data.topic, data.description, data.questionCount[0], data.difficulty)
             } else if (type === 'text') {

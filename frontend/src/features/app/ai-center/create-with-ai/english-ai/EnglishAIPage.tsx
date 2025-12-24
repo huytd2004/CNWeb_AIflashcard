@@ -53,7 +53,7 @@ export default function EnglishAIPage() {
             setGeneratedQuestions(null)
             setIsGenerating(true)
 
-            const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
             const prompt = optimizedPromptEnglishExam(quizData)
             const result = await model.generateContent(prompt)
 

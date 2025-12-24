@@ -35,7 +35,7 @@ export default function AddMoreVocaModal({ children, listFlashcard, setListFlash
 
     const [isGenerating, setIsGenerating] = useState(false)
     const genAI = useMemo(() => new GoogleGenerativeAI(import.meta.env.VITE_API_KEY_AI || ''), [])
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const handleAIGenerate = async (e: any) => {
         e.preventDefault()
         setFlashcards([])

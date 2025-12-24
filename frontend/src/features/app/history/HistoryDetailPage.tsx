@@ -67,7 +67,7 @@ export default function HistoryDetailPage() {
             try {
                 setLoadingQuestionIndex(questionIndex)
 
-                const model = genAI.getGenerativeModel({ model: AI_MODEL })
+                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
                 const prompt = generateAIPrompt(questionItem)
                 const result = await model.generateContent(prompt)
 
