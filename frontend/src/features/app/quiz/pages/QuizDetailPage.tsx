@@ -313,7 +313,7 @@ export default function QuizDetailPage() {
                             {generatedQuiz && (
                                 <DialogAddMoreInfoQuiz
                                     isEdit={true}
-                                    params={{}}
+                                    params={{ slug: data?.slug }}  // ✅ Truyền slug từ data
                                     setShowPreview={setShowPreview}
                                     generatedQuiz={generatedQuiz}
                                     openAddMoreInfo={openAddMoreInfo}

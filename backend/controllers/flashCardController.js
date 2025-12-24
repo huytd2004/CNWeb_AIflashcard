@@ -784,8 +784,8 @@ exports.getAllFlashCardsPublic = async (req, res) => {
     // Tìm kiếm theo tên hoặc mô tả
     if (search) {
       query.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
+        { title: { $regex: search, $options: "i" } },
+        { desc: { $regex: search, $options: "i" } },
       ];
     }
 
