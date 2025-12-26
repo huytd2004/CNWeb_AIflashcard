@@ -17,7 +17,7 @@ interface AuthContextType extends AuthState {
     setLoading: (loading: boolean) => void
     getCookieToken: () => string | null
     getRefreshToken: () => string | null
-    loginWithoutUser: (accessToken: string, refreshToken: string) => void
+    loginWithoutUser: (accessToken: string, refreshToken: string) => Promise<IUser | undefined>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -144,6 +144,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 isAuthenticated: true,
                 isLoading: false,
             })
+            
+            return req.data.user
         }
     }
 
