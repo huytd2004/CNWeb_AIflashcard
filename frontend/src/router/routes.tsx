@@ -31,6 +31,9 @@ import type { RouteObject } from 'react-router-dom'
 import SubjectOutlinePage from '@/features/app/subject-outline/pages/SubjectOutlinePage'
 import SOFlashcardPage from '@/features/app/subject-outline/pages/SOFlashcardPage'
 import ToolsPage from '@/features/app/tools/pages/ToolsPage'
+import AdminLayout from '@/layouts/AdminLayout'
+import AdminDashboard from '@/features/admin/pages/AdminDashboard'
+import AdminSOPage from '@/features/admin/pages/AdminSOPage'
 
 export const routes: RouteObject[] = [
     {
@@ -88,6 +91,20 @@ export const routes: RouteObject[] = [
                     {
                         path: '/decuong',
                         element: <SubjectOutlinePage />,
+                    },
+                ],
+            },
+            {
+                path: '/admin',
+                element: <AdminLayout />,
+                children: [
+                    {
+                        index: true,
+                        element: <AdminDashboard />,
+                    },
+                    {
+                        path: 'decuong',
+                        element: <AdminSOPage />,
                     },
                 ],
             },

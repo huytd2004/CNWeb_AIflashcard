@@ -4,7 +4,7 @@ const { authMiddleware, checkAdminMiddleware } = require("../middleware/authoriz
 const router = express.Router();
 
 router.get("/", getSubOutline);
-router.get("/admin", getSubOutlineAdmin);
+router.get("/admin", authMiddleware, checkAdminMiddleware, getSubOutlineAdmin);
 router.get("/user", authMiddleware, getSubOutlineByUser);
 router.get("/:id", getSubOutlineBySlug);
 router.post("/", authMiddleware, addSubOutline);

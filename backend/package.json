@@ -1,4 +1,15 @@
 {
+    "name": "be",
+    "version": "1.0.0",
+    "description": "",
+    "license": "ISC",
+    "author": "",
+    "type": "commonjs",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "nodemon index.js"
+    },
     "dependencies": {
         "@google/generative-ai": "^0.24.0",
         "bcrypt": "^6.0.0",
@@ -27,16 +38,6 @@
         "uuid": "^11.1.0",
         "validator": "^13.12.0"
     },
-    "name": "be",
-    "version": "1.0.0",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "nodemon index.js"
-    },
-    "author": "",
-    "license": "ISC",
-    "description": "",
     "devDependencies": {
         "esbuild": "0.25.5"
     }
