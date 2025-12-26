@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -11,13 +11,12 @@ import { Switch } from '@/components/ui/switch'
 import { FileText, ImageIcon, Settings, Sparkles, Eye, CircleQuestionMark } from 'lucide-react'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import Loading from '@/components/ui/loading'
-import { GoogleGenerativeAI } from '@google/generative-ai'
-import { optimizedPromptEnglishExam } from '@/lib/optimizedPrompt'
 import { toast } from 'sonner'
 import { MultiSelect } from '@/components/ui/multi-select'
 import { contentSuggestions, difficultyLevels, questionCounts, questionsTemplate, questionTimeLimits, questionTypes, skillTypes } from '../../components/configEnglish'
 import type { IEnglishExam, Question } from '@/types/english-exam'
 import { ExamInterface } from './components/ExamInterface'
+import aiService from '@/services/aiService'
 
 export default function EnglishAIPage() {
     const [activeTab, setActiveTab] = useState('gui')
@@ -36,7 +35,7 @@ export default function EnglishAIPage() {
     const [generatedQuestions, setGeneratedQuestions] = useState<IEnglishExam | null>(null)
     const [isGenerating, setIsGenerating] = useState(false)
     const [jsonOutput, setJsonOutput] = useState<Question[]>([])
-    const genAI = useMemo(() => new GoogleGenerativeAI(import.meta.env.VITE_API_KEY_AI || ''), [])
+    
     const SetDataEnglishExam = (newJsonOutput?: any) => {
         const newExamData: IEnglishExam = {
             title: quizData.title,
@@ -53,17 +52,18 @@ export default function EnglishAIPage() {
             setGeneratedQuestions(null)
             setIsGenerating(true)
 
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-            const prompt = optimizedPromptEnglishExam(quizData)
-            const result = await model.generateContent(prompt)
+            const response = await aiService.generateEnglishExam({
+                title: quizData.title,
+                description: quizData.description,
+                content: quizData.content,
+                difficulty: quizData.difficulty,
+                skills: quizData.skills,
+                questionTypes: quizData.questionTypes,
+                questionCount: quizData.questionCount,
+                timeLimit: quizData.timeLimit,
+            })
 
-            const responseText = result?.response
-                .text()
-                .replace(/^```json\s*/, '')
-                .replace(/^```html\s*/, '')
-                .replace(/```\s*$/, '')
-
-            const newJsonOutput = JSON.parse(responseText || '')
+            const newJsonOutput = response?.data
             setJsonOutput(newJsonOutput)
             setIsGenerating(false)
             SetDataEnglishExam(newJsonOutput)
@@ -76,11 +76,11 @@ export default function EnglishAIPage() {
                     onClick: () => setOpenResult(true),
                 },
             })
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error generating quiz:', error)
 
             toast.error('Đã xảy ra lỗi khi tạo quiz.', {
-                description: error instanceof Error ? error.message : 'Lỗi không xác định',
+                description: error?.response?.data?.message || error.message || 'Lỗi không xác định',
                 position: 'top-center',
                 duration: 5000,
             })

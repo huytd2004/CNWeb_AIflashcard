@@ -1,11 +1,9 @@
-import { useMemo, useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
 import { Eye, Save, File, FileText, MousePointerClick, ImageIcon, LetterText } from 'lucide-react'
-import { GoogleGenerativeAI } from '@google/generative-ai'
 import { toast } from 'sonner'
-import { optimizedPromptQuiz, optimizedPromptQuizTextOption } from '@/lib/optimizedPrompt'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -14,6 +12,7 @@ import DialogAddMoreInfoQuiz from '../../components/DialogAddMoreInfoQuiz'
 import { AIResultPreview } from '../../components/AIResuiltPreview'
 import QuizAIInterfaceOption from '../../components/QuizAIInterfaceOption'
 import QuizAITextOption from '../../components/QuizAITextOption'
+import aiService from '@/services/aiService'
 
 export function QuizAIPage() {
     const [dataQuizInterface, setDataQuizInterface] = useState<QuizAIInterface>({ topic: '', description: '', questionCount: [10], difficulty: 'medium' })
@@ -32,8 +31,6 @@ export function QuizAIPage() {
     // ✅ Refs để track trạng thái
     const isPageActiveRef = useRef(true)
     const isGeneratingRef = useRef(false)
-
-    const genAI = useMemo(() => new GoogleGenerativeAI(import.meta.env.VITE_API_KEY_AI || ''), [])
 
     // ✅ Cập nhật refs khi state thay đổi
     useEffect(() => {
@@ -110,23 +107,23 @@ export function QuizAIPage() {
         try {
             setGeneratedQuiz(null)
             setIsGenerating(true)
-            // setOpenGame(true)
-            let prompt = ''
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+            
+            let response
             if (type === 'interface') {
-                prompt = optimizedPromptQuiz(data.topic, data.description, data.questionCount[0], data.difficulty)
+                response = await aiService.generateQuizInterface({
+                    topic: data.topic,
+                    description: data.description,
+                    questionCount: data.questionCount[0],
+                    difficulty: data.difficulty
+                })
             } else if (type === 'text') {
-                prompt = optimizedPromptQuizTextOption(data.content, data.questionCount[0])
+                response = await aiService.generateQuizText({
+                    content: data.content,
+                    questionCount: data.questionCount[0]
+                })
             }
-            const result = await model.generateContent(prompt)
 
-            const responseText = result?.response
-                .text()
-                .replace(/^```json\s*/, '')
-                .replace(/^```html\s*/, '')
-                .replace(/```\s*$/, '')
-
-            const jsonOutput = JSON.parse(responseText || '')
+            const jsonOutput = response?.data
             setIsGenerating(false)
 
             // ✅ Kiểm tra xem user còn ở trang này không
@@ -150,7 +147,7 @@ export function QuizAIPage() {
             console.error('Error generating quiz:', error)
             if (isPageActiveRef.current) {
                 toast.error('Đã xảy ra lỗi khi tạo quiz.', {
-                    description: error,
+                    description: error?.response?.data?.message || error.message,
                     position: 'top-center',
                     duration: 5000,
                 })

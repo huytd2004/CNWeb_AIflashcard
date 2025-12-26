@@ -1,6 +1,6 @@
 /* eslint-disable no-unsafe-optional-chaining */
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
@@ -11,10 +11,9 @@ import { Sparkles, Type, Send, Eye, Volume2, X } from 'lucide-react'
 import { DialogTrigger } from '@radix-ui/react-dialog'
 import { toast } from 'sonner'
 import type { Flashcard } from '@/types/flashcard'
-import { optimizedPromptFCMore } from '@/lib/optimizedPrompt'
 import flashcardService from '@/services/flashcardService'
 import Loading from '@/components/ui/loading'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import aiService from '@/services/aiService'
 
 interface AddVocabularyModalProps {
     children: React.ReactNode
@@ -34,8 +33,7 @@ export default function AddMoreVocaModal({ children, listFlashcard, setListFlash
     const [flashcards, setFlashcards] = useState<Flashcard[]>([])
 
     const [isGenerating, setIsGenerating] = useState(false)
-    const genAI = useMemo(() => new GoogleGenerativeAI(import.meta.env.VITE_API_KEY_AI || ''), [])
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    
     const handleAIGenerate = async (e: any) => {
         e.preventDefault()
         setFlashcards([])
@@ -45,17 +43,13 @@ export default function AddMoreVocaModal({ children, listFlashcard, setListFlash
             position: 'top-center',
         })
         try {
-            const optimizedPrompt = optimizedPromptFCMore(vocabulary, listFlashcard?.language)
             setIsGenerating(true)
-            const result = await model.generateContent(optimizedPrompt)
+            const response = await aiService.generateFlashcards({
+                vocabulary: vocabulary,
+                language: listFlashcard?.language
+            })
 
-            const parse = result.response
-                .text()
-                .replace(/```json/g, '')
-                .replace(/```/g, '')
-
-            const data = JSON.parse(parse)
-
+            const data = response?.data
             setFlashcards(data || [])
             toast.success('Tạo flashcard thành công từ AI', {
                 description: 'Các từ vựng mới đã được thêm vào bộ flashcard của bạn.',
@@ -66,7 +60,7 @@ export default function AddMoreVocaModal({ children, listFlashcard, setListFlash
         } catch (error: any) {
             console.error('Error generating flashcards with AI:', error)
             toast.error('Đã có lỗi xảy ra, vui lòng thử lại sau', {
-                description: error.message,
+                description: error?.response?.data?.message || error.message,
                 id: 'ai-generate',
                 position: 'top-center',
             })
