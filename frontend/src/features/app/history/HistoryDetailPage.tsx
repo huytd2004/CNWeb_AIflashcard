@@ -1,5 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { useState, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, CheckCircle, XCircle, Brain } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,7 +15,7 @@ import { renderContentWithLaTeX, renderHightlightedContent } from '../ai-center/
 import etcService from '@/services/etcService'
 import DataEmptyNoti from '@/components/etc/DataEmptyNoti'
 import LoadingScreen from '@/components/etc/LoadingScreen'
-const AI_MODEL = 'gemini-2.5-flash'
+import aiService from '@/services/aiService'
 
 export default function HistoryDetailPage() {
     const navigate = useNavigate()
@@ -40,45 +39,21 @@ export default function HistoryDetailPage() {
         }
         fetchAPI()
     }, [location.pathname])
-    // Memoized values
-    const genAI = useMemo(() => new GoogleGenerativeAI(import.meta.env.VITE_API_KEY_AI || ''), [])
-
-    const generateAIPrompt = useCallback((questionItem: any): string => {
-        const basePrompt = `
-            Giải thích câu trả lời.
-            Yêu cầu: ngắn gọn xúc tích dễ hiểu, đúng vào trọng tâm, không lòng vòng.
-            Không cần nói tóm lại, không cần nói lại câu hỏi và sự kì vọng ở cuối câu.
-        `
-
-        const questionContent = `
-            Câu hỏi: ${questionItem.question}
-            A: ${questionItem.answers[0]}
-            B: ${questionItem.answers[1]}
-            C: ${questionItem.answers[2]}
-            D: ${questionItem.answers[3]}
-            Đáp án đúng: ${questionItem.answers[Number(questionItem.correct)]}
-        `
-
-        return questionContent + basePrompt
-    }, [])
 
     const handleExplainAnswer = useCallback(
         async (questionItem: IDataQuiz, questionIndex: number): Promise<void> => {
             try {
                 setLoadingQuestionIndex(questionIndex)
 
-                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-                const prompt = generateAIPrompt(questionItem)
-                const result = await model.generateContent(prompt)
+                const response = await aiService.explainAnswer({
+                    question: questionItem.question,
+                    answers: questionItem.answers,
+                    correct: questionItem.correct
+                })
 
-                const cleanedResponse = result.response
-                    .text()
-                    .replace(/```html/g, '')
-                    .replace(/```/g, '')
-
-                setExplain(cleanedResponse)
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'Đã xảy ra lỗi không xác định'
+                setExplain(response?.data)
+            } catch (error: any) {
+                const errorMessage = error?.response?.data?.message || error.message || 'Đã xảy ra lỗi không xác định'
                 toast.error(`Không thể lấy giải thích`, {
                     description: errorMessage,
                     position: 'top-center',
@@ -89,7 +64,7 @@ export default function HistoryDetailPage() {
                 setLoadingQuestionIndex(null)
             }
         },
-        [genAI, generateAIPrompt]
+        []
     )
     if (loading) return <LoadingScreen />
     if (!history || !question) {
