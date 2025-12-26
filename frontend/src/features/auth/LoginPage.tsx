@@ -43,14 +43,23 @@ export default function LoginPage() {
         const accessToken = searchParams.get('accessToken')
         const refreshToken = searchParams.get('refreshToken')
 
-        const fetchLogin = async () => {
+        const fetchLoginGoogle = async () => {
             if (accessToken && refreshToken) {
-                await loginWithoutUser(accessToken, refreshToken)
+                const user = await loginWithoutUser(accessToken, refreshToken)
                 window.history.replaceState({}, document.title, window.location.pathname)
-                navigate('/', { replace: true })
+                
+                // Redirect based on user role
+                if (user?.role === 'admin') {
+                    // Admin vào trang admin
+                    navigate('/admin', { replace: true })
+                } else {
+                    // User bình thường về trang chủ (không được vào admin)
+                    const targetPath = redirectPath.startsWith('/admin') ? '/' : redirectPath
+                    navigate(targetPath, { replace: true })
+                }
             }
         }
-        fetchLogin()
+        fetchLoginGoogle()
     }, [])
 
     const fetchLogin = async (values: LoginRequest) => {
@@ -61,8 +70,15 @@ export default function LoginPage() {
             // Login successful - save to context
             login(response.user, response.accessToken, response.refreshToken)
 
-            // Navigate to dashboard or home
-            navigate(redirectPath, { replace: true })
+            // Check user role and redirect accordingly
+            if (response.user.role === 'admin') {
+                // Admin vào trang admin
+                navigate('/admin', { replace: true })
+            } else {
+                // User bình thường không được vào trang admin
+                const targetPath = redirectPath.startsWith('/admin') ? '/' : redirectPath
+                navigate(targetPath, { replace: true })
+            }
         } catch (error: any) {
             ToastLogErrror(error)
         } finally {

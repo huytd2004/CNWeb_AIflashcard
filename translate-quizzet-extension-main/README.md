@@ -12,7 +12,6 @@ Quizzet Translate Extension này cho phép người dùng dịch văn bản đã
 ## Cài đặt
 
 1. Clone hoặc tải về repository này.
-   <img src="screenshots/img5.png"/>
 2. Mở Chrome và điều hướng đến `chrome://extensions/` hoặc [Click vào đây](chrome://extensions/)
    <img src="screenshots/img4.png"/>
 
@@ -30,7 +29,6 @@ Quizzet Translate Extension này cho phép người dùng dịch văn bản đã
 ## Giao diện
 
 <img src="screenshots/img1.png"/>
-<img src="screenshots/img2.png"/>
 
 ## Giấy phép
 
