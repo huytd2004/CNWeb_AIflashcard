@@ -12,11 +12,19 @@ const FEATURES = {
     QUIZ: 2,
 }
 
+interface ParsedQuestion {
+    _id: string
+    question: string
+    answer: string
+    options: string[]
+    correctAnswer: string
+}
+
 export default function SOFlashcardPage() {
     const [isFlipped, setIsFlipped] = useState(false)
     const [index, setIndex] = useState(0)
     const [feature, setFeature] = useState(FEATURES.FLASHCARD)
-    const [flashcards, setFlashcards] = useState<any[]>([])
+    const [flashcards, setFlashcards] = useState<ParsedQuestion[]>([])
     const [progress, setProgress] = useState<{ known: any[]; unknown: any[] }>({
         known: [],
         unknown: [],
@@ -39,6 +47,25 @@ export default function SOFlashcardPage() {
         return array
     }
 
+    // Parse format: "A. text|B. text|C. text|D. text|correct:A"
+    const parseAnswer = (answerString: string) => {
+        const parts = answerString.split('|')
+        const options: string[] = []
+        let correctAnswer = ''
+
+        parts.forEach((part) => {
+            if (part.startsWith('correct:')) {
+                correctAnswer = part.replace('correct:', '').trim()
+            } else {
+                // Remove "A. ", "B. ", etc and keep only the text
+                const text = part.substring(part.indexOf('.') + 1).trim()
+                options.push(text)
+            }
+        })
+
+        return { options, correctAnswer }
+    }
+
     useEffect(() => {
         try {
             const fetchAPI = async () => {
@@ -48,8 +75,22 @@ export default function SOFlashcardPage() {
                 console.log(req)
                 const result = req?.quest?.data_so
 
-                setFlashcards(shuffle(result))
-                generateQuizOptions(result[0])
+                // Parse questions with new format
+                const parsedQuestions: ParsedQuestion[] = result.map((item: any) => {
+                    const { options, correctAnswer } = parseAnswer(item.answer)
+                    return {
+                        _id: item._id,
+                        question: item.question,
+                        answer: item.answer, // Keep original for fallback
+                        options,
+                        correctAnswer,
+                    }
+                })
+
+                setFlashcards(shuffle(parsedQuestions))
+                if (parsedQuestions.length > 0) {
+                    setQuizOptions(shuffle([...parsedQuestions[0].options]))
+                }
             }
             fetchAPI()
         } catch (error) {
@@ -61,31 +102,18 @@ export default function SOFlashcardPage() {
 
     useEffect(() => {
         if (flashcards.length > 0) {
-            generateQuizOptions(flashcards[0])
+            setQuizOptions(shuffle([...flashcards[index].options]))
         }
-    }, [flashcards])
+    }, [flashcards, index])
 
     const generateQuizOptions = useCallback(
-        (currentCard: any) => {
-            if (!currentCard || flashcards.length < 4) return
+        (currentCard: ParsedQuestion) => {
+            if (!currentCard || !currentCard.options || currentCard.options.length === 0) return
 
-            // Đáp án đúng
-            const correctOption = currentCard.answer
-
-            // Các đáp án sai
-            const availableCards = flashcards.filter((card) => card.answer !== currentCard.answer)
-            const wrongOptions = []
-            while (wrongOptions.length < 3 && availableCards.length > 0) {
-                const randomIndex = Math.floor(Math.random() * availableCards.length)
-                wrongOptions.push(availableCards[randomIndex].answer)
-                availableCards.splice(randomIndex, 1)
-            }
-
-            // Trộn đáp án đúng và đáp án sai
-            const options = [correctOption, ...wrongOptions]
-            setQuizOptions(options.sort(() => Math.random() - 0.5))
+            // Use parsed options directly
+            setQuizOptions(shuffle([...currentCard.options]))
         },
-        [flashcards]
+        []
     )
 
     // Navigation handlers
@@ -96,7 +124,9 @@ export default function SOFlashcardPage() {
             setIndex(newIndex)
             setIsFlipped(false)
 
-            generateQuizOptions(flashcards[newIndex])
+            if (flashcards[newIndex]) {
+                setQuizOptions(shuffle([...flashcards[newIndex].options]))
+            }
         },
         [index, flashcards, feature]
     )
@@ -104,7 +134,7 @@ export default function SOFlashcardPage() {
     // Progress tracking
     const handleProgress = useCallback(
         (type: any) => {
-            const currentId = flashcards[index].answer
+            const currentId = flashcards[index]._id
             if (type === 'known') {
                 setProgress((prev) => ({
                     ...prev,
@@ -134,10 +164,17 @@ export default function SOFlashcardPage() {
         }
     }
 
-    // Quiz answer handler
-    const handleQuizAnswer = async (selectedAnswer: any, idx: any) => {
-        const isCorrect = selectedAnswer === flashcards[index].answer
-        toast[isCorrect ? 'success' : 'error'](isCorrect ? 'Chính xác, giỏi quá' : 'Sai rồi, thử lại nhé! ^^')
+    // Quiz answer handler - check against parsed options
+    const handleQuizAnswer = async (selectedAnswer: string, idx: number) => {
+        const currentCard = flashcards[index]
+        
+        // Find the correct answer text from options
+        const correctAnswerIndex = ['A', 'B', 'C', 'D'].indexOf(currentCard.correctAnswer)
+        const correctAnswerText = currentCard.options[correctAnswerIndex]
+        
+        const isCorrect = selectedAnswer === correctAnswerText
+        
+        toast[isCorrect ? 'success' : 'error'](isCorrect ? 'Chính xác, giỏi quá! ✨' : 'Sai rồi, thử lại nhé! 💪')
         setSelectedAnswers({
             ...selectedAnswers,
             [idx]: isCorrect ? 'correct' : 'incorrect',
@@ -233,7 +270,37 @@ export default function SOFlashcardPage() {
                                                 transform: 'rotateY(180deg)',
                                             }}
                                         >
-                                            {isFlipped && <p className="text-lg ">{flashcards[index]?.answer}</p>}
+                                            {isFlipped && (
+                                                <div className="w-full space-y-3">
+                                                    <h3 className="text-center font-semibold text-lg mb-4">Các đáp án:</h3>
+                                                    <div className="grid gap-2">
+                                                        {flashcards[index]?.options.map((option, idx) => {
+                                                            const label = ['A', 'B', 'C', 'D'][idx]
+                                                            const isCorrect = label === flashcards[index]?.correctAnswer
+                                                            return (
+                                                                <div
+                                                                    key={idx}
+                                                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                                                        isCorrect
+                                                                            ? 'bg-green-50 dark:bg-green-900/30 border-green-500 dark:border-green-400'
+                                                                            : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
+                                                                    }`}
+                                                                >
+                                                                    <div className="flex items-center gap-3">
+                                                                        <span className={`font-bold ${isCorrect ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}`}>
+                                                                            {label}.
+                                                                        </span>
+                                                                        <span className={isCorrect ? 'font-semibold text-green-800 dark:text-green-200' : 'text-gray-700 dark:text-gray-300'}>
+                                                                            {option}
+                                                                        </span>
+                                                                        {isCorrect && <span className="ml-auto text-green-600 dark:text-green-400">✓</span>}
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )}
@@ -247,27 +314,32 @@ export default function SOFlashcardPage() {
                                             </div>
                                             <span className="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">Quiz</span>
                                         </div>
-                                        <p className=" mb-4 text-gray-500"> (nếu không có đáp án đúng vui lòng bấm bỏ qua)</p>
-                                        <p className="text-lg mb-6">{flashcards[index]?.question}</p>
-                                        <div className="grid grid-cols-2 gap-5 flex-1">
-                                            {quizOptions.map((option, idx) => (
-                                                <Button
-                                                    key={idx}
-                                                    variant="secondary"
-                                                    onClick={() => handleQuizAnswer(option, idx)}
-                                                    disabled={!!selectedAnswers[idx]}
-                                                    className={`w-full h-full py-3 relative text-white transition-colors
-                                                                    ${selectedAnswers[idx] === 'correct' ? '!border-green-500 border-2 tada' : ''}
-                                                                    ${selectedAnswers[idx] === 'incorrect' ? '!border-red-500 border-2 shake' : ''}
+                                        <p className=" mb-4 text-gray-500">Chọn một trong bốn đáp án A, B, C, D</p>
+                                        <p className="text-lg mb-6 font-semibold">{flashcards[index]?.question}</p>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 flex-1">
+                                            {quizOptions.map((option, idx) => {
+                                                const label = ['A', 'B', 'C', 'D'][idx] || String(idx + 1)
+                                                return (
+                                                    <Button
+                                                        key={idx}
+                                                        variant="secondary"
+                                                        onClick={() => handleQuizAnswer(option, idx)}
+                                                        disabled={!!selectedAnswers[idx]}
+                                                        className={`w-full h-full min-h-[80px] py-4 relative text-white transition-all hover:scale-105
+                                                                    ${selectedAnswers[idx] === 'correct' ? '!border-green-500 !bg-green-500 border-2 tada' : ''}
+                                                                    ${selectedAnswers[idx] === 'incorrect' ? '!border-red-500 !bg-red-500 border-2 shake' : ''}
                                                                     `}
-                                                >
-                                                    <div className="hidden md:flex absolute top-1 left-1 h-8 w-8  items-center justify-center rounded-full bg-gray-500 text-gray-900 dark:text-white/80  dark:bg-slate-900/50">
-                                                        {idx + 1}
-                                                    </div>
-                                                    <p className="flex-1 text-center px-2 break-words whitespace-normal">{option}</p>
-                                                </Button>
-                                            ))}
-                                            {quizOptions.length < 4 && <p className="text-red-500">Cảnh báo: Chưa đủ đáp án để trộn ngẫu nhiên (Yêu cầu trên 4)</p>}
+                                                    >
+                                                        <div className="absolute top-2 left-2 h-8 w-8 flex items-center justify-center rounded-full bg-gray-700/80 dark:bg-slate-900/80 font-bold text-white">
+                                                            {label}
+                                                        </div>
+                                                        <p className="flex-1 text-center px-10 break-words whitespace-normal text-sm md:text-base">{option}</p>
+                                                        {selectedAnswers[idx] === 'correct' && <span className="absolute top-2 right-2 text-2xl">✓</span>}
+                                                        {selectedAnswers[idx] === 'incorrect' && <span className="absolute top-2 right-2 text-2xl">✗</span>}
+                                                    </Button>
+                                                )
+                                            })}
+                                            {quizOptions.length < 4 && <p className="text-red-500 col-span-2">Cảnh báo: Câu hỏi chưa có đủ 4 đáp án</p>}
                                         </div>
                                     </div>
                                 )}

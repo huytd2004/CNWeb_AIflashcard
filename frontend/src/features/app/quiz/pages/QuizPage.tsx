@@ -155,9 +155,10 @@ export default function QuizPage() {
                                 width: '100%',
                             }}
                         >
+                            
                             <iframe
-                                src="https://demo.arcade.software/E9dDTckTtd0TesQjnscx?embed&embed_mobile=tab&embed_desktop=inline&show_copy_link=true"
-                                title="Tạo bộ flashcard mới để học từ vựng"
+                                src="https://demo.arcade.software/j8xzzG5vMW5E2QKywNyb?embed&embed_mobile=tab&embed_desktop=inline&show_copy_link=true"
+                                title="Tạo và xuất bản quiz bằng AI"
                                 frameBorder="0"
                                 loading="lazy"
                                 allowFullScreen
