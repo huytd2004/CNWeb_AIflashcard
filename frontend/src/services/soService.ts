@@ -14,8 +14,14 @@ class SOService {
         const response = await axiosInstance.get<any>(`/so/${slug}`)
         return response.data
     }
-    async getSOAdmin() {
-        const response = await axiosInstance.get<any>('/so/admin')
+    async getSOAdmin({ currentPage, itemsPerPage, search, type }: { currentPage?: number; itemsPerPage?: number; search?: string; type?: string } = {}) {
+        const params = new URLSearchParams()
+        if (currentPage) params.set('page', String(currentPage))
+        if (itemsPerPage) params.set('limit', String(itemsPerPage))
+        if (search) params.set('search', search)
+        if (type) params.set('type', type)
+        const qs = params.toString()
+        const response = await axiosInstance.get<any>(`/so/admin${qs ? `?${qs}` : ''}`)
         return response.data
     }
     async deleteSOAdmin(id: string) {
@@ -24,6 +30,10 @@ class SOService {
     }
     async createSO(data: { title: string; content?: string; image?: string; type: string; link?: string; quest?: any[]; file_size?: number }) {
         const response = await axiosInstance.post<any>('/so', data)
+        return response.data
+    }
+    async updateSO(data: { id: string; title: string; image?: string; lenght?: number; quest?: any[]; so_id?: string; link?: string; type?: string }) {
+        const response = await axiosInstance.patch<any>('/so', data)
         return response.data
     }
 }

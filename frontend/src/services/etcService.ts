@@ -65,6 +65,14 @@ class etcService {
         })
         return response.data
     }
+    async uploadFile(data: any) {
+        const response = await axiosInstance.post<any>(`/upload/file`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+        return response.data
+    }
     async convertEngToIPA(text: string) {
         try {
             const response = await axios.post(`${import.meta.env.VITE_ENG_TO_IPA}/convert`, { text: text })
