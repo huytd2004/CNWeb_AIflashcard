@@ -78,7 +78,8 @@ io.on("connection", (socket) => {
             // Nếu lưu thành công, phát lại tin nhắn cho các client khác
             io.to(chatRoomId).emit("message", { ...response.data, displayName, profilePicture })
         } catch (error) {
-            "Lỗi lưu tin nhắn:", error
+            console.error("Lỗi lưu tin nhắn:", error)
+            socket.emit("messageError", { error: "Không thể gửi tin nhắn" })
         }
     })
 
@@ -90,6 +91,54 @@ io.on("connection", (socket) => {
     socket.on("leaveRoom", (roomId) => {
         socket.leave(roomId)
         console.log(`Người dùng ${socket.id} đã rời khỏi phòng ${roomId}`)
+    })
+
+    socket.on("unsendMessagePrivate", async (data) => {
+        const { messageId, userId, chatRoomId, token } = data
+        try {
+            const response = await axios.post(
+                `${process.env.API_ENDPOINT}/chat/unsend`,
+                { messageId, userId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            if (response.data.ok) {
+                io.to(chatRoomId).emit("replyUnsendMessage", messageId)
+            }
+        } catch (error) {
+            console.error("Lỗi unsend message:", error)
+        }
+    })
+
+    socket.on("editMessagePrivate", async (data) => {
+        const { messageId, userId, newMessage, chatRoomId, token } = data
+        try {
+            const response = await axios.post(
+                `${process.env.API_ENDPOINT}/chat/edit`,
+                { messageId, userId, newMessage },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            if (response.data.ok) {
+                io.to(chatRoomId).emit("replyEditMessage", { messageId, newMessage })
+            }
+        } catch (error) {
+            console.error("Lỗi edit message:", error)
+        }
+    })
+
+    socket.on("reactMessagePrivate", async (data) => {
+        const { messageId, userId, emoji, chatRoomId, token } = data
+        try {
+            const response = await axios.post(
+                `${process.env.API_ENDPOINT}/chat/react`,
+                { messageId, userId, emoji },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            if (response.data.ok) {
+                io.to(chatRoomId).emit("replyReactMessage", { messageId, reactions: response.data.reactions })
+            }
+        } catch (error) {
+            console.error("Lỗi react message:", error)
+        }
     })
 
     socket.on("userDisconnect", () => {

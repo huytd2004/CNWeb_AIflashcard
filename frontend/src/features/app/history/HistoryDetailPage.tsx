@@ -22,7 +22,7 @@ export default function HistoryDetailPage() {
     const navigate = useNavigate()
     const [history, setHistory] = useState<IHistory | null>(null)
     const [question, setQuestion] = useState<IDataQuiz[] | null>(null)
-    const [loadingQuestionIndex, setLoadingQuestionIndex] = useState<number | null>(null)
+    const [loadingQuestionId, setLoadingQuestionId] = useState<number | null>(null)
     const [showExplanation, setShowExplanation] = useState<number | null>(null)
     const [explain, setExplain] = useState<string | null>(null)
     const location = useLocation()
@@ -43,7 +43,7 @@ export default function HistoryDetailPage() {
     // Memoized values
     const genAI = useMemo(() => new GoogleGenerativeAI(import.meta.env.VITE_API_KEY_AI || ''), [])
 
-    const generateAIPrompt = useCallback((questionItem: any): string => {
+    const generateAIPrompt = useCallback((questionItem: IDataQuiz): string => {
         const basePrompt = `
             Giải thích câu trả lời.
             Yêu cầu: ngắn gọn xúc tích dễ hiểu, đúng vào trọng tâm, không lòng vòng.
@@ -63,11 +63,11 @@ export default function HistoryDetailPage() {
     }, [])
 
     const handleExplainAnswer = useCallback(
-        async (questionItem: IDataQuiz, questionIndex: number): Promise<void> => {
+        async (questionItem: IDataQuiz): Promise<void> => {
             try {
-                setLoadingQuestionIndex(questionIndex)
+                setLoadingQuestionId(questionItem.id)
 
-                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+                const model = genAI.getGenerativeModel({ model: AI_MODEL });
                 const prompt = generateAIPrompt(questionItem)
                 const result = await model.generateContent(prompt)
 
@@ -86,7 +86,7 @@ export default function HistoryDetailPage() {
                 })
                 setShowExplanation(null)
             } finally {
-                setLoadingQuestionIndex(null)
+                setLoadingQuestionId(null)
             }
         },
         [genAI, generateAIPrompt]
@@ -95,14 +95,14 @@ export default function HistoryDetailPage() {
     if (!history || !question) {
         return <DataEmptyNoti title="Không tìm thấy lịch sử hoặc câu hỏi tương ứng." message="Hãy thử lại sau hoặc liên hệ hỗ trợ nếu bạn nghĩ đây là lỗi." />
     }
-    const toggleExplanation = (questionId: number) => {
+    const toggleExplanation = (questionItem: IDataQuiz) => {
         setExplain(null)
-        setShowExplanation(showExplanation === questionId ? null : questionId)
-        if (showExplanation === questionId) {
+        setShowExplanation(showExplanation === questionItem.id ? null : questionItem.id)
+        if (showExplanation === questionItem.id) {
             setExplain(null)
             return
         }
-        handleExplainAnswer(question[questionId - 1], questionId)
+        handleExplainAnswer(questionItem)
     }
 
     return (
@@ -117,7 +117,7 @@ export default function HistoryDetailPage() {
 
             <div className="space-y-6">
                 {question &&
-                    question.map((question: any) => (
+                    question.map((question: IDataQuiz) => (
                         <Card key={question.id} className="">
                             <CardHeader className="">
                                 <div className="flex items-start justify-between">
@@ -161,9 +161,9 @@ export default function HistoryDetailPage() {
                                 </div>
 
                                 <div className="flex items-start flex-col gap-2">
-                                    <div className="relative group overflow-hidden" onClick={() => toggleExplanation(question.id)}>
+                                    <div className="relative group overflow-hidden" onClick={() => toggleExplanation(question)}>
                                         <Button variant="outline" size="sm" className="bg-linear-to-r from-blue-500 to-purple-500 text-white hover:text-white">
-                                            {loadingQuestionIndex === question.id ? (
+                                            {loadingQuestionId === question.id ? (
                                                 <Loading className="border-x-white" />
                                             ) : (
                                                 <Brain className="h-4 w-4 mr-2 transition-all duration-500 rotate-0 group-hover:rotate-180" />

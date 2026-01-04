@@ -2,10 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { GrFormClose } from 'react-icons/gr'
 import { IoIosArrowDown, IoMdClose } from 'react-icons/io'
 import { MdOutlineReply } from 'react-icons/md'
-import { Send, X } from 'lucide-react'
-import { useAuth } from '@/contexts/AuthContext'
+import { Send, X, ImagePlus } from 'lucide-react'
+import { TokenStorage, useAuth } from '@/contexts/AuthContext'
 import etcService from '@/services/etcService'
 import { Link } from 'react-router-dom'
+import { toast } from 'sonner'
 import handleCompareDate from '@/lib/handleCompareDate'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
@@ -75,11 +76,13 @@ export default function CShowMessage({ chatMessId, handleDeleteChat, socket, che
         }
     }
 
-    // const handleImageChange = (e:any) => {
-    //     const file = e.target.files[0]
-    //     setImage(file)
-    //     setImageReview(file ? URL.createObjectURL(file) : null as any)
-    // }
+    const handleImageChange = (e: any) => {
+        const file = e.target.files[0]
+        if (file) {
+            setImage(file)
+            setImageReview(URL.createObjectURL(file))
+        }
+    }
 
     const handleSendMessage = useCallback(async () => {
         if (!newMessage.trim() && !image) return
@@ -91,7 +94,7 @@ export default function CShowMessage({ chatMessId, handleDeleteChat, socket, che
                 const formData = new FormData()
                 formData.append('image', image)
                 const res = await etcService.uploadImage(formData)
-                imageUrl = res.originalUrl
+                imageUrl = res?.url || res?.data?.url || ''
             }
 
             const messageData = {
@@ -102,19 +105,23 @@ export default function CShowMessage({ chatMessId, handleDeleteChat, socket, che
                 message: newMessage,
                 image: imageUrl,
                 replyTo: replyingTo,
+                token: TokenStorage.getCookieToken(),
             }
             socket.emit('sendMessage', messageData)
             setNewMessage('')
             setImage(null)
             setImageReview(null)
             setReplyingTo(null)
-            // setSendMess(true);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to send message', error)
+            toast.error('Lỗi khi gửi tin nhắn', {
+                description: error?.message || 'Vui lòng thử lại',
+                duration: 3000,
+            })
         } finally {
             setLoading(false)
         }
-    }, [newMessage, image, user, replyingTo, socket])
+    }, [newMessage, image, user, replyingTo, socket, messages])
 
     useEffect(() => {
         if (!socket) return
@@ -127,11 +134,26 @@ export default function CShowMessage({ chatMessId, handleDeleteChat, socket, che
             }
         })
 
+        socket.on('replyUnsendMessage', (messageId: string) => {
+            setChats((prev: any) => prev.map((msg: any) => (msg._id === messageId ? { ...msg, unsend: true } : msg)))
+        })
+
+        socket.on('replyEditMessage', ({ messageId, newMessage }: any) => {
+            setChats((prev: any) => prev.map((msg: any) => (msg._id === messageId ? { ...msg, message: newMessage, isEdit: true } : msg)))
+        })
+
+        socket.on('replyReactMessage', ({ messageId, reactions }: any) => {
+            setChats((prev: any) => prev.map((msg: any) => (msg._id === messageId ? { ...msg, reactions } : msg)))
+        })
+
         return () => {
             socket.emit('leaveRoom', messages?._id)
-            socket.off()
+            socket.off('message')
+            socket.off('replyUnsendMessage')
+            socket.off('replyEditMessage')
+            socket.off('replyReactMessage')
         }
-    }, [messages?._id, socket])
+    }, [messages?._id, socket, userId])
 
     const handleSendNoti = (displayName: string, message: string, profilePicture: string) => {
         if (!window.Notification) {
@@ -167,7 +189,7 @@ export default function CShowMessage({ chatMessId, handleDeleteChat, socket, che
     return (
         <div className="">
             {messages?.participants?.length > 0 && messages && (
-                <div className="fixed right-5 -bottom-[900px] ">
+                <div className="fixed right-5 -bottom-[660px] ">
                     <div className="bg-white dark:bg-slate-800 border dark:border-white/10 w-[338px] h-[455px] rounded-t-lg shadow-sm overflow-hidden">
                         <div className="h-12 flex items-center justify-between p-1 my-1  border-b border-gray-200 dark:border-white/10 shadow-sm">
                             <Link
@@ -206,91 +228,100 @@ export default function CShowMessage({ chatMessId, handleDeleteChat, socket, che
                         <div className={`${imageReview ? 'min-h-[220px] max-h-[220px]' : 'min-h-[320px] max-h-[320px]'}    overflow-y-scroll p-3 overscroll-contain`}>
                             {chats &&
                                 chats?.map((msg: any, index: number) => {
-                                    const isSameUser = index > 0 && chats[index - 1]?.userId === msg?.userId
-                                    const isCurrentUser = msg?.userId === user?._id
+                                    const msgUserId = typeof msg?.userId === 'string' ? msg?.userId : msg?.userId?._id
+                                    const prevMsgUserId = index > 0 ? (typeof chats[index - 1]?.userId === 'string' ? chats[index - 1]?.userId : chats[index - 1]?.userId?._id) : null
+                                    const isSameUser = msgUserId === prevMsgUserId
+                                    const isCurrentUser = msgUserId === user?._id
                                     const isLastMessage = index === chats?.length - 1
-                                    // const image_another_user = user?._id === msg?.userId?._id ? messages?.participants[0]?.userId?.profilePicture : messages?.participants[1]?.userId?.profilePicture;
                                     const otherParticipant = messages?.participants.find((p: any) => p?.userId?._id !== user?._id)
                                     return (
                                         <div key={index} ref={isLastMessage ? lastMessageRef : null}>
                                             {/* Tin nhắn */}
                                             {!isSameUser && <p className="mb-5"></p>}
 
-                                            <div className={`flex items-start ${isCurrentUser ? 'justify-end' : 'justify-start'} mb-[4px] group min-h-[40px] items-center`}>
-                                                {/* Avatar của người khác */}
+                                            <div className={`flex items-start ${isCurrentUser ? 'justify-end' : 'justify-start'} mb-[4px] group min-h-[40px]`}>
+                                                {/* Avatar của người khác - hiển thị bên trái */}
                                                 {!isCurrentUser && !isSameUser && (
-                                                    <Link to={`/profile/${msg?.userId}`} className="w-[35px] h-[35px] relative mr-[-35px]">
-                                                        <img src={otherParticipant?.userId?.profilePicture || '/meme.jpg'} alt="" className="w-full h-full object-cover absolute rounded-full" />
+                                                    <Link to={`/profile/${msgUserId}`} className="w-[35px] h-[35px] relative flex-shrink-0 mr-2">
+                                                        <img src={otherParticipant?.userId?.profilePicture || '/meme.jpg'} alt="" className="w-full h-full object-cover rounded-full" />
                                                     </Link>
                                                 )}
 
                                                 {/* Nội dung tin nhắn */}
-                                                <div className={`flex items-center w-full gap-3 ${isCurrentUser ? 'flex-row-reverse' : ''}`}>
-                                                    <div className={`max-w-[70%]  ${isCurrentUser ? '' : 'ml-[45px]'}`}>
-                                                        {msg?.replyTo && (
-                                                            <div className="text-[12px]">
-                                                                {isCurrentUser ? (
-                                                                    <div className="">
-                                                                        <p className="flex items-center gap-1">
-                                                                            <MdOutlineReply />
-                                                                            Bạn đã trả lời {msg?.replyTo?.userId?._id == userId ? 'chính bạn' : ':' + msg?.replyTo?.userId?.displayName}
-                                                                        </p>
-
-                                                                        {msg?.replyTo?.image && (
-                                                                            <Link to={`#${msg?.replyTo._id}`} className={`mb-1 flex justify-end`}>
-                                                                                <img alt="" src={msg?.replyTo.image} width={100} height={100} className="brightness-50 rounded-lg " />
-                                                                            </Link>
-                                                                        )}
-                                                                    </div>
-                                                                ) : (
-                                                                    <div className="">
-                                                                        <p className="flex items-center gap-1">
-                                                                            <MdOutlineReply />
-                                                                            {msg?.userId?.displayName} đã trả lời bạn
-                                                                        </p>
-                                                                        {msg?.replyTo?.image && (
-                                                                            <Link to={`#${msg?.replyTo._id}`} className={`mb-1 flex justify-start`}>
-                                                                                <img alt="" src={msg?.replyTo.image} width={100} height={100} className="brightness-50 rounded-lg " />
-                                                                            </Link>
-                                                                        )}
-                                                                    </div>
-                                                                )}
-                                                                {msg?.replyTo?.message !== '' && (
-                                                                    <Link to={`#${msg?.replyTo._id}`} className={`block ${isCurrentUser ? 'w-full text-end' : ''}`}>
-                                                                        <p className={` inline-block bg-gray-400 rounded-lg px-3 py-2 mb-[-10px] line-clamp-2`}>
-                                                                            {msg?.replyTo?.unsend ? 'Tin nhắn đã bị gỡ' : msg?.replyTo?.message}
-                                                                        </p>
-                                                                    </Link>
-                                                                )}
-                                                            </div>
-                                                        )}
-                                                        {msg?.isEdit && <span className={`text-xs text-gray-600 ${isCurrentUser ? 'text-end mr-5' : 'text-start ml-5'} block `}>Đã chỉnh sửa</span>}
-                                                        <div className={` ${isCurrentUser ? 'w-full' : ''} `} id={msg?._id}>
-                                                            {msg?.message && (
-                                                                <p
-                                                                    className={`max-w-[350px] ${
-                                                                        isCurrentUser ? ' bg-primary text-white' : 'bg-gray-200 text-gray-500 dark:bg-gray-600 dark:text-gray-200'
-                                                                    } ${msg?.unsend ? '!bg-white border border-primary  text-[12px]' : ''} rounded-lg px-3 py-2 inline-block`}
-                                                                >
-                                                                    {msg?.unsend ? 'Tin nhắn đã bị gỡ' : msg?.message}
-                                                                </p>
+                                                <div className={`flex flex-col ${isCurrentUser ? 'items-end' : 'items-start'} max-w-[70%]`}>
+                                                    {/* Reply indicator */}
+                                                    {msg?.replyTo && (
+                                                        <div className={`text-[12px] mb-1 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
+                                                            <p className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                                                                <MdOutlineReply />
+                                                                {isCurrentUser 
+                                                                    ? `Bạn đã trả lời ${msg?.replyTo?.userId?._id == userId ? 'chính bạn' : msg?.replyTo?.userId?.displayName}`
+                                                                    : `${msg?.userId?.displayName || 'Họ'} đã trả lời bạn`
+                                                                }
+                                                            </p>
+                                                            {msg?.replyTo?.image && (
+                                                                <Link to={`#${msg?.replyTo._id}`} className="inline-block mt-1">
+                                                                    <img alt="" src={msg?.replyTo.image} width={80} height={80} className="brightness-75 rounded-lg" />
+                                                                </Link>
                                                             )}
-
-                                                            {!msg?.unsend && msg?.reactions && msg?.reactions?.length != 0 && (
-                                                                <div className={`mt-[-10px] relative z-2 h-[20px] flex ${isCurrentUser ? 'justify-end mr-1' : 'ml-1'}`}>
-                                                                    {msg?.reactions?.map((react: any, index: number) => (
-                                                                        <div className="flex bg-linear-item-2 rounded-full items-center px-[3px] cursor-pointer " key={index}>
-                                                                            <img src={react.emoji} alt="" width={15} height={15} className="" />
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
+                                                            {msg?.replyTo?.message && (
+                                                                <Link to={`#${msg?.replyTo._id}`}>
+                                                                    <p className="inline-block bg-gray-400 dark:bg-gray-600 text-white rounded-lg px-3 py-1 text-xs line-clamp-2 mt-1">
+                                                                        {msg?.replyTo?.unsend ? 'Tin nhắn đã bị gỡ' : msg?.replyTo?.message}
+                                                                    </p>
+                                                                </Link>
                                                             )}
                                                         </div>
-                                                        {!msg?.unsend && msg?.image && (
-                                                            <img src={msg?.image || '/meme.jpg'} alt="" width={200} height="auto" className="object-cover rounded-lg mt-2" />
+                                                    )}
+
+                                                    {/* Edit indicator */}
+                                                    {msg?.isEdit && (
+                                                        <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">Đã chỉnh sửa</span>
+                                                    )}
+
+                                                    {/* Message content */}
+                                                    <div id={msg?._id} className="relative">
+                                                        {msg?.message && (
+                                                            <p
+                                                                className={`rounded-2xl px-4 py-2 inline-block break-words ${
+                                                                    isCurrentUser 
+                                                                        ? 'bg-primary text-white rounded-br-sm' 
+                                                                        : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded-bl-sm'
+                                                                } ${msg?.unsend ? '!bg-transparent border border-gray-300 dark:border-gray-600 !text-gray-400 text-xs italic' : ''}`}
+                                                            >
+                                                                {msg?.unsend ? 'Tin nhắn đã bị gỡ' : msg?.message}
+                                                            </p>
+                                                        )}
+
+                                                        {/* Reactions */}
+                                                        {!msg?.unsend && msg?.reactions && msg?.reactions?.length > 0 && (
+                                                            <div className={`absolute -bottom-2 flex gap-1 ${isCurrentUser ? 'right-0' : 'left-0'}`}>
+                                                                {msg?.reactions?.map((react: any, idx: number) => (
+                                                                    <div key={idx} className="flex bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-full items-center px-1 shadow-sm">
+                                                                        <img src={react.emoji} alt="" width={14} height={14} />
+                                                                    </div>
+                                                                ))}
+                                                            </div>
                                                         )}
                                                     </div>
-                                                    {isSameUser && <p className="text-gray-500 text-xs ">{msg?.timestamp && handleCompareDate(msg?.timestamp)}</p>}
+
+                                                    {/* Image */}
+                                                    {!msg?.unsend && msg?.image && (
+                                                        <img 
+                                                            src={msg?.image} 
+                                                            alt="" 
+                                                            className={`max-w-[200px] object-cover rounded-lg mt-2 cursor-pointer hover:opacity-90 transition-opacity ${
+                                                                isCurrentUser ? 'rounded-br-sm' : 'rounded-bl-sm'
+                                                            }`}
+                                                        />
+                                                    )}
+
+                                                    {/* Timestamp - chỉ hiển thị khi không phải cùng user */}
+                                                    {!isSameUser && (
+                                                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                                            {msg?.timestamp && handleCompareDate(msg?.timestamp)}
+                                                        </p>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -309,10 +340,10 @@ export default function CShowMessage({ chatMessId, handleDeleteChat, socket, che
                                 </label>
                             )}
                             <div className="flex flex-1 gap-2  items-center border border-gray-200 dark:border-white/10 rounded-md bg-white dark:bg-slate-800  px-3 py-1">
-                                {/* <label htmlFor="image" className="h-full flex items-center justify-center text-gray-500 hover:text-primary cursor-pointer">
-                                    <IoIosImages size={20} />
+                                <label htmlFor="image-upload" className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary cursor-pointer transition-colors">
+                                    <ImagePlus size={20} />
                                 </label>
-                                <input id="image" type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e)} /> */}
+                                <input id="image-upload" type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e)} />
 
                                 <div className="flex flex-col flex-1  ">
                                     {imageReview && (

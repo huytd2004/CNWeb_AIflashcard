@@ -133,25 +133,25 @@ export default function SOFlashcardPage() {
 
     // Progress tracking
     const handleProgress = useCallback(
-        (type: any) => {
-            const currentId = flashcards[index]._id
+        (type: any, cardId?: string) => {
+            const currentId = cardId || flashcards[index]._id
             if (type === 'known') {
+                // Đánh dấu câu hiện tại là đã học
                 setProgress((prev) => ({
                     ...prev,
                     known: Array.from(new Set([...prev.known, currentId])),
-                    unknown: prev.unknown.filter((id) => id !== currentId),
                 }))
                 handleChangeIndex('next')
             } else {
+                // Bỏ đánh dấu câu hiện tại khỏi đã học
                 setProgress((prev) => ({
                     ...prev,
-                    unknown: Array.from(new Set([...prev.unknown, currentId])),
                     known: prev.known.filter((id) => id !== currentId),
                 }))
                 handleChangeIndex('prev')
             }
         },
-        [index, flashcards]
+        [index, flashcards, handleChangeIndex]
     )
 
     const handlePlayAudio = (method: any) => {
@@ -167,6 +167,7 @@ export default function SOFlashcardPage() {
     // Quiz answer handler - check against parsed options
     const handleQuizAnswer = async (selectedAnswer: string, idx: number) => {
         const currentCard = flashcards[index]
+        const cardId = currentCard._id
         
         // Find the correct answer text from options
         const correctAnswerIndex = ['A', 'B', 'C', 'D'].indexOf(currentCard.correctAnswer)
@@ -183,7 +184,7 @@ export default function SOFlashcardPage() {
             handlePlayAudio('correct')
 
             setTimeout(() => {
-                handleProgress('known')
+                handleProgress('known', cardId)
                 setSelectedAnswers({})
             }, 1000)
         } else {
@@ -325,12 +326,12 @@ export default function SOFlashcardPage() {
                                                         variant="secondary"
                                                         onClick={() => handleQuizAnswer(option, idx)}
                                                         disabled={!!selectedAnswers[idx]}
-                                                        className={`w-full h-full min-h-[80px] py-4 relative text-white transition-all hover:scale-105
+                                                        className={`w-full h-full min-h-[80px] py-4 relative text-black dark:text-white transition-all hover:scale-105
                                                                     ${selectedAnswers[idx] === 'correct' ? '!border-green-500 !bg-green-500 border-2 tada' : ''}
                                                                     ${selectedAnswers[idx] === 'incorrect' ? '!border-red-500 !bg-red-500 border-2 shake' : ''}
                                                                     `}
                                                     >
-                                                        <div className="absolute top-2 left-2 h-8 w-8 flex items-center justify-center rounded-full bg-gray-700/80 dark:bg-slate-900/80 font-bold text-white">
+                                                        <div className="absolute top-2 left-2 h-8 w-8 flex items-center justify-center rounded-full bg-gray-300 dark:bg-slate-900/80 font-bold text-black dark:text-white">
                                                             {label}
                                                         </div>
                                                         <p className="flex-1 text-center px-10 break-words whitespace-normal text-sm md:text-base">{option}</p>
@@ -372,7 +373,7 @@ export default function SOFlashcardPage() {
                                             key={value}
                                             onClick={() => setFeature(value)}
                                             variant={feature === value ? 'default' : 'secondary'}
-                                            className={`text-white transition-colors  border border-white/10 `}
+                                            className={`${feature === value ? 'text-white' : 'text-black dark:text-white'} transition-colors border border-white/10`}
                                         >
                                             {name}
                                         </Button>

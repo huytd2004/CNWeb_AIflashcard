@@ -29,7 +29,7 @@ export default function ChatCommunityPage() {
     const [loading, setLoading] = useState(false)
     const inputRef = useRef<HTMLInputElement | null>(null) // tham chiếu đến input
     const [messageInput, setMessageInput] = useState('') // State để quản lý giá trị input
-    const [image, setImage] = useState('')
+    const [image, setImage] = useState<File | null>(null)
     const [imageReview, setImageReview] = useState<string | null>(null)
     const [replyingTo, setReplyingTo] = useState<IChatCommunityMessage | null>(null) // quản lí trạng thái đang trả lời tin nhắn nào
     const [podiumUsers, setPodiumUsers] = useState<IPodiumUser[]>([])
@@ -82,6 +82,7 @@ export default function ChatCommunityPage() {
     const messageHandlers = useMemo(
         () => ({
             updateMessages: (newMessage: { _id: string; [key: string]: any }) => {
+
                 setMessages((prev: any) => [...prev, newMessage]) // Sử dụng setMessages thay vì setChatState
             },
             handleUnsend: (messageId: string) => {
@@ -129,19 +130,19 @@ export default function ChatCommunityPage() {
 
                 formData.append('image', image)
                 const uploadResponse = await etcService.uploadImage(formData)
-                imageUrl = uploadResponse?.data?.url
+                imageUrl = uploadResponse?.url || uploadResponse?.data?.url || ''
             }
 
             const messageData = {
                 userId: user?._id,
                 message: messageInput,
                 token: TokenStorage.getCookieToken(),
-                image: imageUrl,
+                image: imageUrl || '',
                 replyTo: replyingTo,
             }
             socket?.emit('sendMessageCommu', messageData)
             setMessageInput('')
-            setImage('')
+            setImage(null)
             setImageReview(null)
             setReplyingTo(null)
             toast.success('Thành công', {
@@ -237,7 +238,7 @@ export default function ChatCommunityPage() {
 
     const handleImageChange = (e: any) => {
         const file = e.target.files[0]
-        setImage(file)
+        setImage(file || null)
         setImageReview(file ? URL.createObjectURL(file) : null)
         if (inputRef.current) {
             inputRef.current.focus()
@@ -363,7 +364,7 @@ export default function ChatCommunityPage() {
                                                 className="absolute top-2 right-2 h-8 w-8 flex items-center justify-center rounded-full bg-red-500/50 hover:bg-white/10 transition-all duration-300 cursor-pointer"
                                                 onClick={() => {
                                                     setImageReview(null)
-                                                    setImage('')
+                                                    setImage(null)
                                                 }}
                                             >
                                                 <X size={16} />

@@ -24,7 +24,6 @@ const ChatCard = forwardRef<HTMLDivElement, MessageCardProps>(({ message, isLast
     const [emojiPopoverOpen, setEmojiPopoverOpen] = useState(false)
     const [isHovered, setIsHovered] = useState(false)
     const [open, setOpen] = useState(false)
-    // ✅ Hiển thị actions khi hover HOẶC khi popover đang mở
     const shouldShowActions = isHovered || emojiPopoverOpen
 
     return (
@@ -112,15 +111,15 @@ const ChatCard = forwardRef<HTMLDivElement, MessageCardProps>(({ message, isLast
                         <p className="break-words whitespace-normal">{message?.message}</p>
                     )}
                 </div>
-                <PhotoView src={message?.image}>
-                    <div className="relative w-full h-full">
-                        <div className="">
-                            {message?.image && (
+                {!message?.unsend && message?.image && message?.image.trim() !== '' && (
+                    <PhotoView src={message?.image}>
+                        <div className="relative w-full h-full">
+                            <div className="">
                                 <img src={message?.image} alt="" width={200} height={200} className=" cursor-pointer hover:opacity-90 transition-all duration-200 object-contain rounded-lg" />
-                            )}
+                            </div>
                         </div>
-                    </div>
-                </PhotoView>
+                    </PhotoView>
+                )}
 
                 <div className="flex items-center gap-2">
                     {message?.reactions?.map((react, index) => (
