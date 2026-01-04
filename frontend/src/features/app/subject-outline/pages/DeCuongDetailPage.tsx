@@ -306,13 +306,18 @@ export default function DeCuongDetailPage() {
                                 {filteredQuestions &&
                                     filteredQuestions.length > 0 &&
                                     filteredQuestions.map((question: any, index: number) => (
-                                        <Link
+                                        <button
                                             key={question._id}
-                                            to={`#question-${index + 1}`}
-                                            className="bg-gray-300 dark:bg-gray-600 flex items-center justify-center w-full aspect-square rounded-lg text-gray-800 dark:text-white font-semibold hover:bg-blue-600 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg border border-gray-400 dark:border-gray-500"
+                                            onClick={() => {
+                                                const element = document.getElementById(`question-${index + 1}`)
+                                                if (element) {
+                                                    element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                                                }
+                                            }}
+                                            className="bg-gray-300 dark:bg-gray-600 flex items-center justify-center w-full aspect-square rounded-lg text-gray-800 dark:text-white font-semibold hover:bg-blue-600 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg border border-gray-400 dark:border-gray-500 cursor-pointer"
                                         >
                                             {index + 1}
-                                        </Link>
+                                        </button>
                                     ))}
                             </div>
                         </Card>

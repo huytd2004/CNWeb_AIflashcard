@@ -153,7 +153,14 @@ const addMessage = async (req, res) => {
     // const populatedMessage = await Message.findById(savedMessage._id).populate("userId", "_id displayName profilePicture").populate("replyTo");
 
     const populatedMessage = await Message.findById(savedMessage._id).populate([
-      { path: "userId", select: "_id displayName profilePicture" }, // Populating User
+      {
+        path: "userId",
+        select: "_id displayName profilePicture gamification",
+        populate: {
+          path: "gamification",
+          select: "level xp dailyStreak",
+        }
+      }, // Populating User with gamification
       {
         path: "replyTo",
         select: "message userId unsend image",

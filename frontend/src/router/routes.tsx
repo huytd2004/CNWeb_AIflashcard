@@ -34,6 +34,7 @@ import ToolsPage from '@/features/app/tools/pages/ToolsPage'
 import AdminLayout from '@/layouts/AdminLayout'
 import AdminDashboard from '@/features/admin/pages/AdminDashboard'
 import AdminSOPage from '@/features/admin/pages/AdminSOPage'
+import AdminUsersPage from '@/features/admin/pages/AdminUsersPage'
 
 export const routes: RouteObject[] = [
     {
@@ -101,6 +102,10 @@ export const routes: RouteObject[] = [
                     {
                         index: true,
                         element: <AdminDashboard />,
+                    },
+                    {
+                        path: 'users',
+                        element: <AdminUsersPage />,
                     },
                     {
                         path: 'decuong',
