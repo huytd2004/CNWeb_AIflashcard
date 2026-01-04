@@ -21,6 +21,7 @@ const taskRoutes = require("./task");
 const gamificationRoutes = require("./gamification");
 const englishExamRoutes = require("./englishExam");
 const feedbackRoutes = require("./feedback");
+const aiRoutes = require("./ai");
 
 const router = express.Router();
 router.use("/api/auth", authRoutes);
@@ -44,5 +45,6 @@ router.use("/api/task", taskRoutes);
 router.use("/api/gamification", gamificationRoutes);
 router.use("/api/english-exam", englishExamRoutes);
 router.use("/api/feedback", feedbackRoutes);
+router.use("/api/ai", aiRoutes);
 
 module.exports = router;

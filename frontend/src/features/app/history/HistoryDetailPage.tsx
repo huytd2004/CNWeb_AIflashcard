@@ -1,5 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { useState, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, CheckCircle, XCircle, Brain } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,7 +15,7 @@ import { renderContentWithLaTeX, renderHightlightedContent } from '../ai-center/
 import etcService from '@/services/etcService'
 import DataEmptyNoti from '@/components/etc/DataEmptyNoti'
 import LoadingScreen from '@/components/etc/LoadingScreen'
-const AI_MODEL = 'gemini-2.5-flash'
+import aiService from '@/services/aiService'
 
 export default function HistoryDetailPage() {
     const navigate = useNavigate()
@@ -76,9 +75,9 @@ export default function HistoryDetailPage() {
                     .replace(/```html/g, '')
                     .replace(/```/g, '')
 
-                setExplain(cleanedResponse)
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'Đã xảy ra lỗi không xác định'
+                setExplain(response?.data)
+            } catch (error: any) {
+                const errorMessage = error?.response?.data?.message || error.message || 'Đã xảy ra lỗi không xác định'
                 toast.error(`Không thể lấy giải thích`, {
                     description: errorMessage,
                     position: 'top-center',
@@ -89,7 +88,7 @@ export default function HistoryDetailPage() {
                 setLoadingQuestionId(null)
             }
         },
-        [genAI, generateAIPrompt]
+        []
     )
     if (loading) return <LoadingScreen />
     if (!history || !question) {

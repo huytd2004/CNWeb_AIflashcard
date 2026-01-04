@@ -1,9 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Save, Sparkle } from 'lucide-react'
 import { toast } from 'sonner'
-import { GoogleGenerativeAI } from '@google/generative-ai'
-import { optimizedPromptGenerateTitle } from '@/lib/optimizedPrompt'
 import { useNavigate } from 'react-router-dom'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -12,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import Loading from '@/components/ui/loading'
 import quizService from '@/services/quizService'
 import ToastLogErrror from '@/components/etc/ToastLogErrror'
+import aiService from '@/services/aiService'
 interface QuizQuestion {
     title: string
     subject: string
@@ -112,31 +111,23 @@ export default function DialogAddMoreInfoQuiz({ children, isEdit, params, setSho
         }
     }
 
-    const genAI = useMemo(() => new GoogleGenerativeAI(import.meta.env.VITE_API_KEY_AI || ''), [])
     const handleGenerateTitle = async () => {
         if (loadingTitle) return // Prevent multiple clicks
         setLoadingTitle(true)
         try {
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
             const shuffledQuestions = generatedQuiz?.questions ? [...generatedQuiz.questions].sort(() => Math.random() - 0.5) : []
             const sliceQuiz = shuffledQuestions.slice(0, 10)
-            const prompt = optimizedPromptGenerateTitle(sliceQuiz)
-            const result = await model.generateContent(prompt)
-
-            const responseText = result?.response
-                .text()
-                // ✅ Chỉ xóa wrapper markdown, giữ lại code blocks bên trong content
-                .replace(/^```json\s*/, '') // Xóa ```json ở đầu
-                .replace(/^```html\s*/, '') // Xóa ```html ở đầu
-                .replace(/```\s*$/, '') // Xóa ``` ở cuối
-            const jsonOutput = JSON.parse(responseText || '')
+            
+            const response = await aiService.generateQuizTitle(sliceQuiz)
+            const jsonOutput = response?.data
+            
             setTempQuiz({
                 title: jsonOutput.title,
                 subject: jsonOutput.subject,
                 content: jsonOutput.content,
             })
         } catch (error: any) {
-            toast.error('Đã có lỗi xảy ra khi tạo tiêu đề', { description: error, duration: 5000, position: 'top-center' })
+            toast.error('Đã có lỗi xảy ra khi tạo tiêu đề', { description: error?.response?.data?.message || error.message, duration: 5000, position: 'top-center' })
         } finally {
             setLoadingTitle(false)
         }

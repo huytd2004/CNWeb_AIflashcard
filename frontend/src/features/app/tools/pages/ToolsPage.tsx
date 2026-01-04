@@ -10,20 +10,18 @@ export default function ToolsPage() {
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                         <Wand2 className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                        <span>
-                            <HyperText duration={1500} delay={500}>
-                                Kho công cụ & Hiệu ứng
-                            </HyperText>
-                        </span>
+                        <HyperText duration={1500} delay={500}>
+                            Kho công cụ & Hiệu ứng
+                        </HyperText>
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-2 text-lg">Tùy chỉnh giao diện và trải nghiệm học tập của bạn với các hiệu ứng thú vị.</p>
+                    <p className="text-gray-400 dark:text-gray-400 mt-2 text-lg font-bold">Tùy chỉnh giao diện và trải nghiệm học tập của bạn với các hiệu ứng thú vị.</p>
                 </div>
             </div>
 
             {/* --- CONTENT --- */}
             <div className="space-y-4">
-                <ToolCategory category="websiteEffects" />
-                <ToolCategory category="comingSoon" />
+                <ToolCategory category="websiteEffects" description="Các hiệu ứng cho website" />
+                <ToolCategory category="comingSoon" description="Các công cụ sớm có" />
             </div>
         </div>
     )
