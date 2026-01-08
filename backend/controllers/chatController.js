@@ -31,7 +31,19 @@ const GetById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const chat = await Chat.findById(id).populate("participants.userId", "displayName profilePicture").populate("messages");
+        const chat = await Chat.findById(id)
+            .populate("participants.userId", "displayName profilePicture")
+            .populate({
+                path: "messages",
+                populate: [
+                    { path: "userId", select: "displayName profilePicture" },
+                    {
+                        path: "replyTo",
+                        select: "message userId unsend image",
+                        populate: { path: "userId", select: "displayName profilePicture" },
+                    },
+                ],
+            });
 
         if (!chat) {
             return res.status(404).json({ message: "Chat not found." });
@@ -167,6 +179,92 @@ const MarkAsRead = async (req, res) => {
         res.status(500).json({ message: "Server gặp lỗi, vui lòng thử lại sau ít phút" });
     }
 };
+
+const UnsendMessage = async (req, res) => {
+    try {
+        const { messageId, userId } = req.body;
+
+        const message = await Message.findOneAndUpdate(
+            { _id: messageId, userId },
+            { $set: { unsend: true } },
+            { new: true }
+        );
+
+        if (!message) {
+            return res.status(404).json({
+                ok: false,
+                message: "Tin nhắn không tồn tại hoặc bạn không có quyền xóa",
+            });
+        }
+
+        res.status(200).json({ ok: true, message: "Gỡ tin nhắn thành công" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server gặp lỗi, vui lòng thử lại sau ít phút" });
+    }
+};
+
+const EditMessage = async (req, res) => {
+    try {
+        const { messageId, userId, newMessage } = req.body;
+
+        const result = await Message.findOneAndUpdate(
+            { _id: messageId, userId },
+            { $set: { message: newMessage, isEdit: true } },
+            { new: true }
+        );
+
+        if (!result) {
+            return res.status(404).json({
+                ok: false,
+                message: "Tin nhắn không tồn tại hoặc bạn không có quyền sửa",
+            });
+        }
+
+        res.status(200).json({ ok: true, message: "Sửa tin nhắn thành công" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server gặp lỗi, vui lòng thử lại sau ít phút" });
+    }
+};
+
+const ReactMessage = async (req, res) => {
+    try {
+        const { messageId, userId, emoji } = req.body;
+
+        const message = await Message.findById(messageId);
+
+        if (!message) {
+            return res.status(404).json({ ok: false, message: "Tin nhắn không tồn tại" });
+        }
+
+        const existingReactionIndex = message.reactions.findIndex(
+            (reaction) => reaction.userId.toString() === userId.toString()
+        );
+
+        if (existingReactionIndex !== -1) {
+            if (message.reactions[existingReactionIndex].emoji === emoji) {
+                message.reactions.splice(existingReactionIndex, 1);
+            } else {
+                message.reactions[existingReactionIndex].emoji = emoji;
+            }
+        } else {
+            message.reactions.push({ userId, emoji });
+        }
+
+        await message.save();
+        const updatedMessage = await Message.findById(messageId).populate(
+            "reactions.userId",
+            "_id displayName profilePicture"
+        );
+
+        res.status(200).json({ ok: true, reactions: updatedMessage.reactions });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server gặp lỗi, vui lòng thử lại sau ít phút" });
+    }
+};
+
 module.exports = {
     Get,
     GetById,
@@ -174,4 +272,7 @@ module.exports = {
     Update,
     Delete,
     MarkAsRead,
+    UnsendMessage,
+    EditMessage,
+    ReactMessage,
 };

@@ -236,7 +236,7 @@ export default function FlashcardPage() {
                                     }}
                                 >
                                     <iframe
-                                        src="https://demo.arcade.software/A449C0bQB21B0b7c2r6C?embed&embed_mobile=tab&embed_desktop=inline&show_copy_link=true"
+                                        src="https://demo.arcade.software/TFIl3P4KK12wrp8aMBAo?embed&embed_mobile=inline&embed_desktop=inline&show_copy_link=true"
                                         title="Tạo bộ flashcard mới để học từ vựng"
                                         frameBorder="0"
                                         loading="lazy"

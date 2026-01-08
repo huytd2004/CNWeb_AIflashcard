@@ -85,7 +85,7 @@ export default function HomePage() {
                         }}
                     >
                         <iframe
-                            src="https://demo.arcade.software/VEOX7fL248JaEgeFmRtK?embed&embed_mobile=tab&embed_desktop=inline&show_copy_link=true"
+                            src="https://demo.arcade.software/TFIl3P4KK12wrp8aMBAo?embed&embed_mobile=inline&embed_desktop=inline&show_copy_link=true"
                             title="Tạo bộ flashcard mới để học từ vựng"
                             loading="lazy"
                             allowFullScreen

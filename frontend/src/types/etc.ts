@@ -211,9 +211,9 @@ export interface IQuestion {
 }
 
 export interface IDataQuiz {
-    id: string
+    id: number
     question: string
-    answers: []
+    answers: string[]
     correct: string
 }
 
