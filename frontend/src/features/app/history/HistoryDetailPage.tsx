@@ -16,7 +16,6 @@ import { renderContentWithLaTeX, renderHightlightedContent } from '../ai-center/
 import etcService from '@/services/etcService'
 import DataEmptyNoti from '@/components/etc/DataEmptyNoti'
 import LoadingScreen from '@/components/etc/LoadingScreen'
-const AI_MODEL = 'gemini-2.5-flash'
 
 export default function HistoryDetailPage() {
     const navigate = useNavigate()
@@ -67,7 +66,7 @@ export default function HistoryDetailPage() {
             try {
                 setLoadingQuestionIndex(questionIndex)
 
-                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+                const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
                 const prompt = generateAIPrompt(questionItem)
                 const result = await model.generateContent(prompt)
 

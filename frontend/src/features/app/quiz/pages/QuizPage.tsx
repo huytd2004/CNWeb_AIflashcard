@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { SiQuizlet } from 'react-icons/si'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
@@ -56,10 +56,10 @@ export default function QuizPage() {
 
     useEffect(() => {
         const fetchPublicFC = async () => {
-            const resQuiz = await quizService.getPublicQuizzes({ 
-                currentPage, 
+            const resQuiz = await quizService.getPublicQuizzes({
+                currentPage,
                 itemsPerPage: itemsPerPage,
-                search: searchQuiz 
+                search: searchQuiz,
             })
             setDataQuizPublic(resQuiz.publicQuiz)
             setPagination(resQuiz.pagination)
@@ -82,17 +82,17 @@ export default function QuizPage() {
         try {
             setLoading(true)
             setCurrentPage(1) // Reset to first page after search
-            
+
             if (tab === 'my' && user) {
                 const resQuizData = await quizService.getQuizByUser(searchQuiz)
                 if (resQuizData.ok) {
                     setDataQuiz(resQuizData.quiz)
                 }
             } else if (tab === 'community') {
-                const resQuiz = await quizService.getPublicQuizzes({ 
-                    currentPage: 1, 
+                const resQuiz = await quizService.getPublicQuizzes({
+                    currentPage: 1,
                     itemsPerPage: itemsPerPage,
-                    search: searchQuiz 
+                    search: searchQuiz,
                 })
                 setDataQuizPublic(resQuiz.publicQuiz)
                 setPagination(resQuiz.pagination)
