@@ -32,7 +32,7 @@ services:
     env_file:
       - ./backend/.env.production
     environment:
-      - NODE_ENV: production
+      - NODE_ENV=production
     networks:
       - flashcard-network
 
@@ -43,7 +43,7 @@ services:
     env_file:
       - ./socket/.env.production
     environment:
-      - NODE_ENV: production
+      - NODE_ENV=production
     depends_on:
       - backend
     networks:
