@@ -3,8 +3,8 @@ User-agent: *
 Allow: /
 
 # Host
-Host: "https://quizzet.site/"
+Host: "https://hustvanvo.io.vn/"
 
 # Sitemaps
-Sitemap: "https://quizzet.site/"/sitemap.xml
-Sitemap: https://quizzet.site/sitemap.xml
+Sitemap: "https://hustvanvo.io.vn/"/sitemap.xml
+Sitemap: https://hustvanvo.io.vn/sitemap.xml
