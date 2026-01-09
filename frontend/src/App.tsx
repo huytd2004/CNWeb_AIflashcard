@@ -5,6 +5,9 @@ import { routes } from './router/routes'
 const router = createBrowserRouter(routes)
 
 function App() {
+    console.log('MODE:', import.meta.env.MODE)
+    console.log('API:', import.meta.env.VITE_API_ENDPOINT)
+
     return <RouterProvider router={router} />
 }
 
