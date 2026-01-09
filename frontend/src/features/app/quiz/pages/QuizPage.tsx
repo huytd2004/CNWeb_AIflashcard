@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { SiQuizlet } from 'react-icons/si'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
@@ -56,10 +56,10 @@ export default function QuizPage() {
 
     useEffect(() => {
         const fetchPublicFC = async () => {
-            const resQuiz = await quizService.getPublicQuizzes({ 
-                currentPage, 
+            const resQuiz = await quizService.getPublicQuizzes({
+                currentPage,
                 itemsPerPage: itemsPerPage,
-                search: searchQuiz 
+                search: searchQuiz,
             })
             setDataQuizPublic(resQuiz.publicQuiz)
             setPagination(resQuiz.pagination)
@@ -82,17 +82,17 @@ export default function QuizPage() {
         try {
             setLoading(true)
             setCurrentPage(1) // Reset to first page after search
-            
+
             if (tab === 'my' && user) {
                 const resQuizData = await quizService.getQuizByUser(searchQuiz)
                 if (resQuizData.ok) {
                     setDataQuiz(resQuizData.quiz)
                 }
             } else if (tab === 'community') {
-                const resQuiz = await quizService.getPublicQuizzes({ 
-                    currentPage: 1, 
+                const resQuiz = await quizService.getPublicQuizzes({
+                    currentPage: 1,
                     itemsPerPage: itemsPerPage,
-                    search: searchQuiz 
+                    search: searchQuiz,
                 })
                 setDataQuizPublic(resQuiz.publicQuiz)
                 setPagination(resQuiz.pagination)
@@ -155,7 +155,6 @@ export default function QuizPage() {
                                 width: '100%',
                             }}
                         >
-                            
                             <iframe
                                 src="https://demo.arcade.software/j8xzzG5vMW5E2QKywNyb?embed&embed_mobile=tab&embed_desktop=inline&show_copy_link=true"
                                 title="Tạo và xuất bản quiz bằng AI"

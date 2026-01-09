@@ -61,35 +61,32 @@ export default function HistoryDetailPage() {
         return questionContent + basePrompt
     }, [])
 
-    const handleExplainAnswer = useCallback(
-        async (questionItem: IDataQuiz): Promise<void> => {
-            try {
-                setLoadingQuestionId(questionItem.id)
+    const handleExplainAnswer = useCallback(async (questionItem: IDataQuiz): Promise<void> => {
+        try {
+            setLoadingQuestionId(questionItem.id)
 
-                const model = genAI.getGenerativeModel({ model: AI_MODEL });
-                const prompt = generateAIPrompt(questionItem)
-                const result = await model.generateContent(prompt)
+            const model = genAI.getGenerativeModel({ model: AI_MODEL })
+            const prompt = generateAIPrompt(questionItem)
+            const result = await model.generateContent(prompt)
 
-                const cleanedResponse = result.response
-                    .text()
-                    .replace(/```html/g, '')
-                    .replace(/```/g, '')
+            const cleanedResponse = result.response
+                .text()
+                .replace(/```html/g, '')
+                .replace(/```/g, '')
 
-                setExplain(response?.data)
-            } catch (error: any) {
-                const errorMessage = error?.response?.data?.message || error.message || 'Đã xảy ra lỗi không xác định'
-                toast.error(`Không thể lấy giải thích`, {
-                    description: errorMessage,
-                    position: 'top-center',
-                    duration: 5000,
-                })
-                setShowExplanation(null)
-            } finally {
-                setLoadingQuestionId(null)
-            }
-        },
-        []
-    )
+            setExplain(response?.data)
+        } catch (error: any) {
+            const errorMessage = error?.response?.data?.message || error.message || 'Đã xảy ra lỗi không xác định'
+            toast.error(`Không thể lấy giải thích`, {
+                description: errorMessage,
+                position: 'top-center',
+                duration: 5000,
+            })
+            setShowExplanation(null)
+        } finally {
+            setLoadingQuestionId(null)
+        }
+    }, [])
     if (loading) return <LoadingScreen />
     if (!history || !question) {
         return <DataEmptyNoti title="Không tìm thấy lịch sử hoặc câu hỏi tương ứng." message="Hãy thử lại sau hoặc liên hệ hỗ trợ nếu bạn nghĩ đây là lỗi." />
