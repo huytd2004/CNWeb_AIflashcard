@@ -129,7 +129,7 @@ export default function VocaCardItem({ data, speakWord, loadingAudio, setIsEditO
                     {/* Action Menu */}
                     {user?._id === data?.userId && (
                         <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
+                            <DropdownMenuTrigger>
                                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                     <MoreVertical className="w-4 h-4" />
                                 </Button>
