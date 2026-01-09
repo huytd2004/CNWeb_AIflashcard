@@ -1,13 +1,13 @@
-# Quizzet Translate Extension
+# My FlashCard Extension
 
-Quizzet Translate Extension này cho phép người dùng dịch văn bản đã chọn trên trang web bằng API Google Translate. Nó hiển thị một biểu tượng bên dưới từ đã chọn, và khi nhấp vào biểu tượng, bản dịch sẽ được hiển thị cùng với tùy chọn lưu bản dịch vào mục đánh dấu.
+My FlashCard Extension này cho phép người dùng dịch văn bản đã chọn trên trang web bằng API Google Translate. Nó hiển thị một biểu tượng bên dưới từ đã chọn, và khi nhấp vào biểu tượng, bản dịch sẽ được hiển thị cùng với tùy chọn lưu bản dịch vào mục đánh dấu.
 
 ## Tính Năng
 
 - Phát hiện văn bản được chọn trên trang web.
 - Hiển thị biểu tượng dịch thuật bên dưới từ đã chọn.
 - Dịch văn bản đã chọn bằng API Google Translate.
-- Khi bấm vào nút lưu vào flashcard thì sẽ tự động lưu vào từ điển lên trang quizzet.site
+- Khi bấm vào nút lưu vào flashcard thì sẽ tự động lưu vào từ điển lên trang https://hustvanvo.io.vn/
 
 ## Cài đặt
 
