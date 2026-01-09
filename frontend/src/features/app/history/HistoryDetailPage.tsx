@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, CheckCircle, XCircle, Brain } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -39,42 +39,22 @@ export default function HistoryDetailPage() {
         }
         fetchAPI()
     }, [location.pathname])
-    // Memoized values
-    const genAI = useMemo(() => new GoogleGenerativeAI(import.meta.env.VITE_API_KEY_AI || ''), [])
 
-    const generateAIPrompt = useCallback((questionItem: IDataQuiz): string => {
-        const basePrompt = `
-            Giải thích câu trả lời.
-            Yêu cầu: ngắn gọn xúc tích dễ hiểu, đúng vào trọng tâm, không lòng vòng.
-            Không cần nói tóm lại, không cần nói lại câu hỏi và sự kì vọng ở cuối câu.
-        `
-
-        const questionContent = `
-            Câu hỏi: ${questionItem.question}
-            A: ${questionItem.answers[0]}
-            B: ${questionItem.answers[1]}
-            C: ${questionItem.answers[2]}
-            D: ${questionItem.answers[3]}
-            Đáp án đúng: ${questionItem.answers[Number(questionItem.correct)]}
-        `
-
-        return questionContent + basePrompt
-    }, [])
-
-    const handleExplainAnswer = useCallback(async (questionItem: IDataQuiz): Promise<void> => {
+    const handleExplainAnswer = async (questionItem: IDataQuiz): Promise<void> => {
         try {
             setLoadingQuestionId(questionItem.id)
 
-            const model = genAI.getGenerativeModel({ model: AI_MODEL })
-            const prompt = generateAIPrompt(questionItem)
-            const result = await model.generateContent(prompt)
+            const response = await aiService.explainAnswer({
+                question: questionItem.question,
+                answers: questionItem.answers,
+                correct: questionItem.correct
+            })
 
-            const cleanedResponse = result.response
-                .text()
-                .replace(/```html/g, '')
-                .replace(/```/g, '')
-
-            setExplain(response?.data)
+            if (response.ok) {
+                setExplain(response.data)
+            } else {
+                throw new Error(response.message || 'Không thể lấy giải thích')
+            }
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message || error.message || 'Đã xảy ra lỗi không xác định'
             toast.error(`Không thể lấy giải thích`, {
@@ -86,7 +66,8 @@ export default function HistoryDetailPage() {
         } finally {
             setLoadingQuestionId(null)
         }
-    }, [])
+    }
+
     if (loading) return <LoadingScreen />
     if (!history || !question) {
         return <DataEmptyNoti title="Không tìm thấy lịch sử hoặc câu hỏi tương ứng." message="Hãy thử lại sau hoặc liên hệ hỗ trợ nếu bạn nghĩ đây là lỗi." />
@@ -134,13 +115,12 @@ export default function HistoryDetailPage() {
                                     {question.answers.map((option: any, index: number) => (
                                         <div
                                             key={index}
-                                            className={`p-3 rounded-lg border-2 transition-colors flex items-center ${
-                                                index === Number(question.correct)
-                                                    ? 'border-green-500 bg-green-50 text-green-800 dark:bg-green-800/50 dark:text-green-200 dark:border-green-700'
-                                                    : index === Number(history.userAnswers[question.id]) && index !== Number(question.correct)
+                                            className={`p-3 rounded-lg border-2 transition-colors flex items-center ${index === Number(question.correct)
+                                                ? 'border-green-500 bg-green-50 text-green-800 dark:bg-green-800/50 dark:text-green-200 dark:border-green-700'
+                                                : index === Number(history.userAnswers[question.id]) && index !== Number(question.correct)
                                                     ? 'border-red-500 bg-red-50 text-red-800 dark:bg-red-800/50 dark:text-red-200 dark:border-red-700'
                                                     : 'border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-gray-800/50'
-                                            }`}
+                                                }`}
                                         >
                                             <div className="flex items-center space-x-2">
                                                 <span className="font-semibold ml-2 mr-3">{String.fromCharCode(65 + Number(index))}</span>
