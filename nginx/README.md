@@ -59,4 +59,5 @@ sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin dock
 6. Khởi chạy:
 
 - .init-letsencrypt.sh
-- docker compose -p ai-flashcard up -d
+- docker compose up -d
+- Kiểm tra danh sách các container: docker compose ps
