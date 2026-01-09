@@ -401,9 +401,8 @@ export default function FlashcardDetailPage() {
                 </Link>
             </div>
             <div
-                className={`pb-5 grid grid-cols-1 ${
-                    viewMode === 'simple' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ' : ' md:grid-cols-3 '
-                } gap-3 md:gap-4 xl:gap-5 px-3 md:px-5 w-full `}
+                className={`pb-5 grid grid-cols-1 ${viewMode === 'simple' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ' : ' md:grid-cols-3 '
+                    } gap-3 md:gap-4 xl:gap-5 px-3 md:px-5 w-full `}
             >
                 {loading && <LoadingGrid className="h-[700px]" />}
 
@@ -432,7 +431,7 @@ export default function FlashcardDetailPage() {
                     </div>
                 )}
             </div>
-            {filteredFlashcards && filteredFlashcards.length === 0 && !loading && (
+            {filteredFlashcards && !loading && (
                 <EditVocaModal
                     isEditOpen={isEditOpen}
                     setIsEditOpen={setIsEditOpen}

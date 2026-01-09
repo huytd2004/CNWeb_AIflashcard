@@ -1,5 +1,6 @@
 import AICenterPage from '@/features/app/ai-center/AICenterPage'
 import { CreateWithAIHomePage } from '@/features/app/ai-center/create-with-ai/CreateWithAIHomePage'
+import ManualQuizPage from '@/features/app/ai-center/create-with-hand/ManualQuizPage'
 import { DraftsPage } from '@/features/app/ai-center/create-with-ai/draft/DraftsPage'
 import EnglishAIPage from '@/features/app/ai-center/create-with-ai/english-ai/EnglishAIPage'
 import { QuizAIPage } from '@/features/app/ai-center/create-with-ai/quiz-ai/QuizAIPage'
@@ -187,6 +188,10 @@ export const routes: RouteObject[] = [
                     {
                         path: 'drafts',
                         element: <DraftsPage />,
+                    },
+                    {
+                        path: 'create-with-hand/manual-quiz-file',
+                        element: <ManualQuizPage />,
                     },
                 ],
             },

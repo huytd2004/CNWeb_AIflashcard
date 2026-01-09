@@ -34,13 +34,13 @@ const ChatCard = forwardRef<HTMLDivElement, MessageCardProps>(({ message, isLast
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <Link to={`/profile/${message.userId._id}`} className="block w-10 md:w-12 h-10 md:h-12 relative rounded-full overflow-hidden">
-                <img src={message?.userId.profilePicture} alt="" className="absolute w-full h-full object-cover" />
+            <Link to={`/profile/${message?.userId?._id}`} className="block w-10 md:w-12 h-10 md:h-12 relative rounded-full overflow-hidden">
+                <img src={message?.userId?.profilePicture} alt="" className="absolute w-full h-full object-cover" />
             </Link>
             <div className="flex-1 w-full space-y-2">
                 <div className="flex items-center justify-between h-7">
                     <div className="flex items-center gap-2">
-                        <Link to={`/profile/${message.userId._id}`} className="font-medium hover:underline">
+                        <Link to={`/profile/${message?.userId?._id}`} className="font-medium hover:underline">
                             {message?.userId?.displayName}
                         </Link>
                         <p className="text-gray-500 dark:text-gray-400 text-xs">{handleCompareDate(message?.timestamp)}</p>
@@ -48,9 +48,9 @@ const ChatCard = forwardRef<HTMLDivElement, MessageCardProps>(({ message, isLast
                         {message?.replyTo && (
                             <span className="text-xs text-gray-400 w-[70px]  md:max-w-[350px] truncate">
                                 {/* to={`#${message.replyTo._id}`} */}
-                                (Trả lời {message?.replyTo?.userId.displayName}:{' '}
+                                (Trả lời {message?.replyTo?.userId?.displayName}:{' '}
                                 <Link className="hover:underline hover:text-white/80" to="#">
-                                    {message?.replyTo.message}
+                                    {message?.replyTo?.message}
                                 </Link>
                                 )
                             </span>
@@ -74,7 +74,7 @@ const ChatCard = forwardRef<HTMLDivElement, MessageCardProps>(({ message, isLast
                         </div>
                         <Dialog open={open} onOpenChange={setOpen}>
                             <DialogTrigger asChild>
-                                {(user?.role === 'admin' || user?._id === message?.userId._id) && (
+                                {(user?.role === 'admin' || user?._id === message?.userId?._id) && (
                                     <div className="h-7 w-7 flex items-center justify-center hover:bg-gray-600 rounded-md transition-all duration-200 cursor-pointer text-gray-800 dark:text-white/60 hover:text-white">
                                         <Trash size={14} />
                                     </div>
