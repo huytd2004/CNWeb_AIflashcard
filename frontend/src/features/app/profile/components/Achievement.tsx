@@ -24,6 +24,7 @@ export default function Achievement({ gamificationProfile, achievements }: { gam
         const unlockedIds = new Set(gamificationProfile.achievements.map((item) => item.achievement._id))
         setUnlockedAchievementIds(unlockedIds)
     }, [gamificationProfile])
+
     return (
         <div>
             <div className="flex justify-between items-center">
