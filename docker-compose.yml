@@ -25,19 +25,37 @@ services:
       - ./certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
-  backend:
+  # --- BACKEND CLUSTER ---
+  backend-1:
     build: ./backend
+    container_name: backend-1
     restart: unless-stopped
     env_file:
       - ./backend/.env.production
     environment:
       - NODE_ENV=production
+      - SERVER_ID=1
     networks:
-      - flashcard-network
-    deploy:
-      replicas: 2
+      flashcard-network:
+        aliases:
+          - backend
 
-  socket:
+  backend-2:
+    build: ./backend
+    container_name: backend-2
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env.production
+    environment:
+      - NODE_ENV=production
+      - SERVER_ID=2
+    networks:
+      flashcard-network:
+        aliases:
+          - backend
+
+  # --- SOCKET CLUSTER ---
+  socket-1:
     build: ./socket
     restart: unless-stopped
     env_file:
@@ -45,19 +63,37 @@ services:
     environment:
       - NODE_ENV=production
     depends_on:
-      - backend
+      - backend-1
     networks:
       - flashcard-network
-    deploy:
-      replicas: 2
 
-  ai-python:
+    # --- SOCKET CLUSTER ---
+  socket-2:
+    build: ./socket
+    restart: unless-stopped
+    env_file:
+      - ./socket/.env.production
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend-2
+    networks:
+      - flashcard-network
+
+  # --- AI CLUSTER ---
+  ai-python-1:
     build: ./ai-python
+    container_name: ai-python-1
     restart: unless-stopped
     networks:
       - flashcard-network
-    deploy:
-      replicas: 2
+
+  ai-python-2:
+    build: ./ai-python
+    container_name: ai-python-2
+    restart: unless-stopped
+    networks:
+      - flashcard-network
 
 networks:
   flashcard-network:
