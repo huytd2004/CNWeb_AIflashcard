@@ -60,4 +60,5 @@ sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin dock
 
 - .init-letsencrypt.sh
 - docker compose up -d
+- Build lại service: docker compose up -d --build nginx
 - Kiểm tra danh sách các container: docker compose ps

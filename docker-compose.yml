@@ -27,7 +27,6 @@ services:
 
   backend:
     build: ./backend
-    container_name: backend-flashcard
     restart: unless-stopped
     env_file:
       - ./backend/.env.production
@@ -35,10 +34,11 @@ services:
       - NODE_ENV=production
     networks:
       - flashcard-network
+    deploy:
+      replicas: 2
 
   socket:
     build: ./socket
-    container_name: socket-flashcard
     restart: unless-stopped
     env_file:
       - ./socket/.env.production
@@ -48,13 +48,16 @@ services:
       - backend
     networks:
       - flashcard-network
+    deploy:
+      replicas: 2
 
   ai-python:
     build: ./ai-python
-    container_name: ai-python-flashcard
     restart: unless-stopped
     networks:
       - flashcard-network
+    deploy:
+      replicas: 2
 
 networks:
   flashcard-network:
