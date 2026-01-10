@@ -55,7 +55,7 @@ services:
           - backend
 
   # --- SOCKET CLUSTER ---
-  socket-1:
+  socket:
     build: ./socket
     container_name: socket-1
     restart: unless-stopped
@@ -68,34 +68,20 @@ services:
     networks:
       - flashcard-network
 
-    # --- SOCKET CLUSTER ---
-  socket-2:
-    build: ./socket
-    container_name: socket-2
-    restart: unless-stopped
-    env_file:
-      - ./socket/.env.production
-    environment:
-      - NODE_ENV=production
-    depends_on:
-      - backend-2
-    networks:
-      - flashcard-network
-
   # --- AI CLUSTER ---
-  ai-python-1:
-    build: ./ai-python
-    container_name: ai-python-1
-    restart: unless-stopped
-    networks:
-      - flashcard-network
+  # ai-python-1:
+  #   build: ./ai-python
+  #   container_name: ai-python-1
+  #   restart: unless-stopped
+  #   networks:
+  #     - flashcard-network
 
-  ai-python-2:
-    build: ./ai-python
-    container_name: ai-python-2
-    restart: unless-stopped
-    networks:
-      - flashcard-network
+  # ai-python-2:
+  #   build: ./ai-python
+  #   container_name: ai-python-2
+  #   restart: unless-stopped
+  #   networks:
+  #     - flashcard-network
 
 networks:
   flashcard-network:
