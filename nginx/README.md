@@ -65,5 +65,5 @@ sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin dock
 - Tắt và xóa container cũ: docker compose down
 - Bật lại chế độ scale: docker compose up -d --build
 - Xem log backend: docker compose logs -f backend
-- Tắt 1 con backend: docker stop cnweb_aiflashcard-backend-1
-- Bật lại: docker start cnweb_aiflashcard-backend-1
+- Tắt 1 con backend: docker stop backend-1
+- Bật lại: docker start backend-1

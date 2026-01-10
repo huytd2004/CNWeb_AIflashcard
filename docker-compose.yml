@@ -57,6 +57,7 @@ services:
   # --- SOCKET CLUSTER ---
   socket-1:
     build: ./socket
+    container_name: socket-1
     restart: unless-stopped
     env_file:
       - ./socket/.env.production
@@ -70,6 +71,7 @@ services:
     # --- SOCKET CLUSTER ---
   socket-2:
     build: ./socket
+    container_name: socket-2
     restart: unless-stopped
     env_file:
       - ./socket/.env.production
